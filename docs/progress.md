@@ -5,7 +5,7 @@ Atualizado pela skill `implementar-fase`. Uma linha por fase; a "próxima fase" 
 | Fase | Nome | Status | Data | Custo mensal após a fase | Observações |
 |---|---|---|---|---|---|
 | V | Validação (docs/validacao.md) | ⬜ |  | R$ 0 | não é código |
-| 0 | Fundação do projeto | 🔍 | 2026-10-15 | R$ 0 | TODO(fase 1): redirecionar (app)→(auth) sem sessão e tela de login real em `app/(auth)/entrar.tsx`. `expo-dev-client` entra quando houver o 1º development build (Fase 8). |
+| 0 | Fundação do projeto | ✅ | 2026-10-15 | R$ 0 | Conferido: Expo Go e CI verde. `make db-up` dispensado pelo usuário (testado no ambiente na nuvem e no CI). TODO(fase 1): redirecionar (app)→(auth) sem sessão e tela de login real em `app/(auth)/entrar.tsx`. `expo-dev-client` entra quando houver o 1º development build (Fase 8). |
 | P | Preview por PR (EAS Update) | ⬜ |  | R$ 0 |  |
 | 1 | Login e perfil | ⬜ |  | R$ 0 |  |
 | 2 | Esquema completo, RLS e seeds | ⬜ |  | R$ 0 |  |
