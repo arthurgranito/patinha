@@ -32,16 +32,50 @@ Leia sempre, antes de qualquer tarefa: `docs/resumo.md`, `docs/roadmap.md` (ADRs
 9. **Conteúdo:** nada é publicado sem a revisão do adestrador parceiro (`reviewed_by`). Você escreve rascunhos; quem aprova é ele.
 
 ## Comandos
-A Fase 0 cria o Makefile e os scripts. Depois dela, esta seção é atualizada com os comandos reais:
-- `make dev`
-- `make db-up`
-- `make db-reset`
-- `make db-test`
-- `make types`
-- `make test`
-- `make lint`
-- `make typecheck`
-- `make check`
+Gerenciador de pacotes: **npm** (o `package-lock.json` é versionado; o CI usa `npm ci` com cache do `setup-node`). O Supabase CLI vem como devDependency (`npx supabase`) e precisa do Docker rodando.
+
+| Comando | O que faz |
+|---|---|
+| `make install` | `npm ci` |
+| `make dev` | `npx expo start` (QR code para o Expo Go) |
+| `make db-up` / `make db-down` | sobe/para o Supabase local (API em `127.0.0.1:54321`, Studio em `localhost:54323`) |
+| `make db-reset` | recria o banco local aplicando `supabase/migrations` e `supabase/seed.sql` |
+| `make db-test` | testes pgTAP de `supabase/tests` (`supabase test db`) |
+| `make types` | gera `src/lib/database.types.ts` a partir do banco local |
+| `make test` | Jest (jest-expo + Testing Library) |
+| `make lint` | ESLint (config do Expo) + Prettier `--check` |
+| `make typecheck` | `tsc --noEmit` |
+| `make doctor` | `expo-doctor` (precisa de internet para a API do Expo) |
+| `make export-check` | `npx expo export --platform all` (pega erros de bundling) |
+| `make check` | tudo acima, na ordem do CI |
+
+Scripts equivalentes no `package.json`: `lint`, `format`, `format:check`, `typecheck`, `test`, `doctor`, `export:check`.
+
+## Estrutura de pastas
+```
+app/                    rotas do Expo Router
+  _layout.tsx           layout raiz (tema, safe area)
+  (auth)/               telas sem sessão (login)
+  (app)/                telas com sessão
+src/
+  features/<domínio>/   código de cada domínio (componentes, hooks, chamadas, testes)
+  lib/                  supabase.ts (cliente), theme.ts (claro/escuro), utils.ts, database.types.ts (gerado)
+  components/ui/        componentes visuais genéricos (Screen, Text…)
+__tests__/              testes Jest de telas; testes de src ficam em __tests__/ ao lado do código
+supabase/
+  migrations/           migrations versionadas (nunca edite uma já aplicada)
+  tests/                testes pgTAP (000_rls_em_tudo.sql garante RLS em toda tabela de public)
+  functions/            Edge Functions (Deno)
+content/                conteúdo de adestramento (JSON)
+app.config.ts           config do Expo (projectId do EAS, updates.url, runtimeVersion fingerprint)
+eas.json                perfis development, preview e production
+```
+
+## Convenções de código
+- Imports internos com o alias `@/` (aponta para `src/`).
+- Cliente Supabase: sempre `getSupabase()` de `@/lib/supabase` (criado sob demanda; sessão no AsyncStorage).
+- Cores, espaçamentos e tipografia só via `useTheme()` de `@/lib/theme`.
+- Tipos do banco: rode `make types` depois de cada migration e faça commit do arquivo gerado.
 
 ## Skills do projeto (`.claude/skills/`)
 - `implementar-fase`: executa uma fase do roadmap de ponta a ponta.
