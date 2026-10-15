@@ -14,7 +14,7 @@
     "typecheck": "tsc --noEmit",
     "test": "jest",
     "doctor": "npx -y expo-doctor@latest",
-    "export:check": "expo export --platform all --output-dir /tmp/expo-export"
+    "export:check": "expo export --platform all --output-dir /tmp/expo-export && bash scripts/check-bundle.sh /tmp/expo-export"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",
