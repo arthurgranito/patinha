@@ -1,0 +1,1 @@
+-- Seeds locais (rodam no supabase db reset). Conteúdo de exemplo chega na Fase 2.

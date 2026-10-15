@@ -2,7 +2,7 @@
 
 Adestramento positivo gamificado para cães: treinos guiados de 10 minutos por dia, níveis, sequência, carteirinha de truques e cards para o story.
 
-**Status:** antes da Fase 0. Primeiro, a validação (`docs/validacao.md`).
+**Status:** Fase 0 (fundação) feita, veja `docs/progress.md`.
 
 ## Documentos
 - `docs/resumo.md`: a ideia em 1 página.
@@ -15,3 +15,11 @@ Adestramento positivo gamificado para cães: treinos guiados de 10 minutos por d
 
 ## Para quem desenvolve
 Leia `AGENTS.md`.
+
+```bash
+npm ci
+cp .env.example .env   # opcional na Fase 0
+make dev               # QR code para o Expo Go
+make db-up             # Supabase local (precisa do Docker)
+make check             # tudo o que o CI roda
+```
