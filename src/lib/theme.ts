@@ -8,8 +8,11 @@ const palette = {
   grafiteClaro: '#2B2620',
   cinza: '#6B645C',
   cinzaClaro: '#B5ADA3',
+  carameloTexto: '#9A5512',
   verde: '#2E9D5B',
+  verdeEscuro: '#237A46',
   vermelho: '#C9483B',
+  vermelhoEscuro: '#A33A2F',
   branco: '#FFFFFF',
 } as const;
 
@@ -22,6 +25,8 @@ export type ThemeColors = {
   textMuted: string;
   primary: string;
   onPrimary: string;
+  /** Links e destaques em texto (contraste ≥ 4,5:1 com background e surface, X.5). */
+  link: string;
   success: string;
   danger: string;
   border: string;
@@ -34,9 +39,11 @@ export const colors: Record<ColorScheme, ThemeColors> = {
     text: palette.grafite,
     textMuted: palette.cinza,
     primary: palette.caramelo,
-    onPrimary: palette.branco,
-    success: palette.verde,
-    danger: palette.vermelho,
+    // Grafite sobre caramelo: 6,96:1 (branco dava 2,46:1, abaixo do mínimo do X.5).
+    onPrimary: palette.grafite,
+    link: palette.carameloTexto,
+    success: palette.verdeEscuro,
+    danger: palette.vermelhoEscuro,
     border: '#EADBC8',
   },
   dark: {
@@ -46,6 +53,7 @@ export const colors: Record<ColorScheme, ThemeColors> = {
     textMuted: palette.cinzaClaro,
     primary: palette.caramelo,
     onPrimary: palette.grafite,
+    link: palette.caramelo,
     success: '#4CC27F',
     danger: '#E2695D',
     border: '#3A332B',
