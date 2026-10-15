@@ -82,3 +82,15 @@ eas.json                perfis development, preview e production
 - `licao-adestramento`: escreve, valida e revisa o conteúdo de `content/`.
 - `card-compartilhavel`: cards de story (React Native + view-shot).
 - `post-instagram`: posts, Reels/TikTok e calendário de conteúdo.
+
+## Subagentes do projeto (`.claude/agents/`)
+- `testador`: roda a verificação completa e devolve só as falhas.
+- `revisor-seguranca`: RLS, Storage, Edge Functions, webhooks e segredos.
+- `verificador-fluxos`: confere o código contra `docs/flows.md`.
+- `revisor-conteudo`: pré-revisão de `content/` (nunca preenche `reviewed_by`/`published`).
+- `designer-cards`: cards de story em `src/features/cards`.
+- `social-media`: posts, roteiros e calendários em `marketing/`.
+
+## Sessões na nuvem
+- `.claude/hooks/session-start.sh` (SessionStart, só com `CLAUDE_CODE_REMOTE=true`): roda `npm ci` quando o lockfile mudou, inicia o `dockerd` se preciso e sobe o Supabase local. Logs em `$TMPDIR/patinha-session-start/`.
+- MCP `supabase-local` (`.mcp.json`) aponta para `http://localhost:54321/mcp` e só funciona com o Supabase local de pé.
