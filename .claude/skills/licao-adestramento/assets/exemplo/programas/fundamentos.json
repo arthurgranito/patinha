@@ -1,0 +1,156 @@
+{
+  "slug": "fundamentos",
+  "title": "Fundamentos",
+  "goal_code": "filhote",
+  "summary": "A base de tudo: atenção, senta e deita, em sessões curtas de poucos minutos por dia.",
+  "weeks": 2,
+  "min_age_weeks": 10,
+  "is_premium": false,
+  "days": [
+    {
+      "day": 1,
+      "items": [
+        {
+          "exercise": "olha-pra-mim",
+          "target_level": 1
+        },
+        {
+          "exercise": "senta",
+          "target_level": 1
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "items": [
+        {
+          "exercise": "olha-pra-mim",
+          "target_level": 1
+        },
+        {
+          "exercise": "senta",
+          "target_level": 1
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "items": [
+        {
+          "exercise": "olha-pra-mim",
+          "target_level": 2
+        },
+        {
+          "exercise": "senta",
+          "target_level": 1
+        },
+        {
+          "exercise": "deita",
+          "target_level": 1
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "items": [
+        {
+          "exercise": "senta",
+          "target_level": 2
+        },
+        {
+          "exercise": "deita",
+          "target_level": 1
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "items": [
+        {
+          "exercise": "olha-pra-mim",
+          "target_level": 2
+        },
+        {
+          "exercise": "senta",
+          "target_level": 2
+        },
+        {
+          "exercise": "deita",
+          "target_level": 1
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "items": [
+        {
+          "exercise": "olha-pra-mim",
+          "target_level": 2
+        },
+        {
+          "exercise": "deita",
+          "target_level": 2
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "items": [
+        {
+          "exercise": "senta",
+          "target_level": 2
+        },
+        {
+          "exercise": "deita",
+          "target_level": 2
+        }
+      ]
+    },
+    {
+      "day": 8,
+      "items": [
+        {
+          "exercise": "olha-pra-mim",
+          "target_level": 3
+        },
+        {
+          "exercise": "senta",
+          "target_level": 3
+        }
+      ]
+    },
+    {
+      "day": 9,
+      "items": [
+        {
+          "exercise": "deita",
+          "target_level": 2
+        },
+        {
+          "exercise": "senta",
+          "target_level": 3
+        }
+      ]
+    },
+    {
+      "day": 10,
+      "items": [
+        {
+          "exercise": "olha-pra-mim",
+          "target_level": 3
+        },
+        {
+          "exercise": "senta",
+          "target_level": 3
+        },
+        {
+          "exercise": "deita",
+          "target_level": 3
+        }
+      ]
+    }
+  ],
+  "published": false,
+  "reviewed_by": null,
+  "reviewed_at": null
+}

@@ -1,0 +1,51 @@
+{
+  "slug": "olha-pra-mim",
+  "title": "Olha pra mim",
+  "category": "obediencia",
+  "goal_codes": [
+    "filhote",
+    "guia",
+    "latido"
+  ],
+  "summary": "Ensina o cão a buscar seu olhar. É a base para passear sem puxar e para acalmar em situações agitadas.",
+  "steps": [
+    "Fique em um lugar calmo, com petiscos pequenos na mão fechada.",
+    "Espere em silêncio até o seu cão olhar para o seu rosto.",
+    "No instante em que ele olhar nos seus olhos, clique e dê o petisco.",
+    "Repita 5 vezes e termine com uma brincadeira."
+  ],
+  "levels": [
+    {
+      "n": 1,
+      "nome": "Olhar espontâneo",
+      "criterio": "Olha para o seu rosto 3 vezes em 1 minuto, sem você chamar."
+    },
+    {
+      "n": 2,
+      "nome": "Com o nome",
+      "criterio": "Olha para você quando ouve o nome, 3 vezes seguidas."
+    },
+    {
+      "n": 3,
+      "nome": "Com distração",
+      "criterio": "Olha para você com o nome mesmo com um brinquedo no chão."
+    },
+    {
+      "n": 4,
+      "nome": "Na rua",
+      "criterio": "Olha para você com o nome na calçada, com gente passando."
+    }
+  ],
+  "tips": [
+    "Se ele não olha, fique mais perto e mais baixo, na altura dele.",
+    "Comece com o cão um pouco cansado, depois de um passeio curto."
+  ],
+  "safety_note": "Nunca force o olhar segurando o focinho. O olhar precisa ser escolha do cão.",
+  "duration_min": 3,
+  "min_age_weeks": 8,
+  "is_premium": false,
+  "video_url": null,
+  "published": false,
+  "reviewed_by": null,
+  "reviewed_at": null
+}

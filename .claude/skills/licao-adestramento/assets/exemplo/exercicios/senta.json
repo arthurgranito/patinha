@@ -1,0 +1,51 @@
+{
+  "slug": "senta",
+  "title": "Senta",
+  "category": "obediencia",
+  "goal_codes": [
+    "filhote",
+    "pular",
+    "truques"
+  ],
+  "summary": "O comando base para quase tudo: cumprimentar sem pular, esperar a comida, atravessar a rua.",
+  "steps": [
+    "Segure um petisco perto do focinho do seu cão.",
+    "Leve o petisco devagar para cima e para trás, por cima da cabeça.",
+    "Quando o bumbum encostar no chão, clique e dê o petisco na hora.",
+    "Repita 5 vezes e faça uma pausa para brincar."
+  ],
+  "levels": [
+    {
+      "n": 1,
+      "nome": "Com o petisco guiando",
+      "criterio": "Senta 3 vezes seguidas seguindo o petisco."
+    },
+    {
+      "n": 2,
+      "nome": "Só com o gesto",
+      "criterio": "Senta com o gesto da mão vazia, petisco só depois do clique."
+    },
+    {
+      "n": 3,
+      "nome": "Com a palavra e distração",
+      "criterio": "Senta com a palavra 'senta' com alguém andando pela sala."
+    },
+    {
+      "n": 4,
+      "nome": "Em qualquer lugar",
+      "criterio": "Senta com a palavra na calçada ou na casa de outra pessoa."
+    }
+  ],
+  "tips": [
+    "Se ele pula atrás do petisco, mantenha a mão mais baixa, quase encostando no focinho.",
+    "Treine antes da refeição: com um pouco de fome, a atenção é maior."
+  ],
+  "safety_note": "Use petiscos pequenos (do tamanho de uma ervilha) e desconte da ração do dia.",
+  "duration_min": 3,
+  "min_age_weeks": 8,
+  "is_premium": false,
+  "video_url": null,
+  "published": false,
+  "reviewed_by": null,
+  "reviewed_at": null
+}

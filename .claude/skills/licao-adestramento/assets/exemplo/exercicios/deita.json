@@ -1,0 +1,51 @@
+{
+  "slug": "deita",
+  "title": "Deita",
+  "category": "obediencia",
+  "goal_codes": [
+    "filhote",
+    "latido",
+    "truques"
+  ],
+  "summary": "Ajuda o cão a se acalmar e a esperar. Ótimo para quando chega visita ou na hora da sua refeição.",
+  "steps": [
+    "Peça o senta e segure um petisco perto do focinho.",
+    "Leve o petisco devagar até o chão, entre as patas da frente.",
+    "Quando os cotovelos encostarem no chão, clique e dê o petisco.",
+    "Repita 4 vezes e termine com um carinho."
+  ],
+  "levels": [
+    {
+      "n": 1,
+      "nome": "Com o petisco guiando",
+      "criterio": "Deita 3 vezes seguidas seguindo o petisco até o chão."
+    },
+    {
+      "n": 2,
+      "nome": "Só com o gesto",
+      "criterio": "Deita com a mão vazia apontando o chão, petisco depois do clique."
+    },
+    {
+      "n": 3,
+      "nome": "Com duração",
+      "criterio": "Fica deitado 10 segundos antes do clique."
+    },
+    {
+      "n": 4,
+      "nome": "Com a palavra, fora de casa",
+      "criterio": "Deita com a palavra 'deita' no quintal ou na calçada."
+    }
+  ],
+  "tips": [
+    "Se ele levanta o bumbum, leve o petisco mais devagar e mais perto das patas.",
+    "Treine em um tapete: o chão frio ou liso incomoda alguns cães."
+  ],
+  "safety_note": "Cães idosos ou com dor nas articulações podem ter dificuldade: respeite o tempo e consulte o veterinário se notar dor.",
+  "duration_min": 3,
+  "min_age_weeks": 10,
+  "is_premium": false,
+  "video_url": null,
+  "published": false,
+  "reviewed_by": null,
+  "reviewed_at": null
+}

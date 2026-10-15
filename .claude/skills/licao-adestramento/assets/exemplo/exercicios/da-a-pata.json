@@ -1,0 +1,49 @@
+{
+  "slug": "da-a-pata",
+  "title": "Dá a pata",
+  "category": "truque",
+  "goal_codes": [
+    "truques"
+  ],
+  "summary": "O truque clássico que todo mundo ama. Ótimo para fortalecer a relação e para fotos no story.",
+  "steps": [
+    "Peça o senta e feche um petisco na mão, perto do peito dele.",
+    "Espere: ele vai cheirar, lamber e, em algum momento, levantar a pata.",
+    "Quando a pata encostar na sua mão, clique e dê o petisco.",
+    "Repita 5 vezes; depois ofereça a mão aberta e vazia."
+  ],
+  "levels": [
+    {
+      "n": 1,
+      "nome": "Pata na mão fechada",
+      "criterio": "Encosta a pata na mão fechada 3 vezes seguidas."
+    },
+    {
+      "n": 2,
+      "nome": "Mão aberta",
+      "criterio": "Coloca a pata na mão aberta e vazia, petisco depois do clique."
+    },
+    {
+      "n": 3,
+      "nome": "Com a palavra",
+      "criterio": "Dá a pata quando você diz 'pata', sem mostrar a mão antes."
+    },
+    {
+      "n": 4,
+      "nome": "Com outras pessoas",
+      "criterio": "Dá a pata 3 vezes seguidas quando outra pessoa da casa ou uma visita pede."
+    }
+  ],
+  "tips": [
+    "Se ele não levanta a pata, toque de leve atrás da pata e recompense o menor movimento.",
+    "Sessões de 3 minutos: truque cansa a cabeça mais do que parece."
+  ],
+  "safety_note": "Se o cão evita usar uma pata ou demonstra dor ao levantá-la, pare e consulte o veterinário.",
+  "duration_min": 3,
+  "min_age_weeks": 12,
+  "is_premium": false,
+  "video_url": null,
+  "published": false,
+  "reviewed_by": null,
+  "reviewed_at": null
+}

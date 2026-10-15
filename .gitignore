@@ -1,0 +1,32 @@
+# dependências e builds
+node_modules/
+.expo/
+dist/
+web-build/
+/ios/
+/android/
+*.apk
+*.aab
+*.ipa
+
+# segredos (NUNCA versionar)
+.env
+.env.*
+!.env.example
+*.p8
+*.p12
+*.key
+*.mobileprovision
+google-services*.json
+GoogleService-Info*.plist
+
+# supabase local
+supabase/.temp/
+supabase/.branches/
+
+# testes e ferramentas
+coverage/
+.maestro/screenshots/
+*.log
+.DS_Store
+__pycache__/

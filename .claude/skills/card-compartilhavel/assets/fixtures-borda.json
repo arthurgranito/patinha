@@ -1,0 +1,30 @@
+{
+  "_sobre": "Casos de borda para os fixtures dos cards do Patinha. fotoUri deve apontar para imagens locais de teste (assets de desenvolvimento), nunca para fotos reais de usuários.",
+  "caes": {
+    "normal": { "nomeCao": "Caramelo", "fotoUri": "dev://caes/caramelo.jpg" },
+    "semFoto": { "nomeCao": "Pipoca", "fotoUri": null },
+    "nomeLongo": { "nomeCao": "Princesa Jujuba da Silva Sauro", "fotoUri": "dev://caes/jujuba.jpg" },
+    "nomeCurto": { "nomeCao": "Bí", "fotoUri": "dev://caes/bi.jpg" },
+    "fotoHorizontal": { "nomeCao": "Thor", "fotoUri": "dev://caes/thor-horizontal.jpg" },
+    "fotoEscura": { "nomeCao": "Pretinha", "fotoUri": "dev://caes/pretinha-noite.jpg" }
+  },
+  "truques": {
+    "curto": "Senta",
+    "medio": "Dar a pata",
+    "longo": "Ficar no lugar enquanto a porta abre"
+  },
+  "numeros": {
+    "dias": [1, 2, 3, 7, 30, 100, 365],
+    "truquesNaCarteirinha": [0, 1, 7, 24],
+    "sequencia": [7, 30, 100, 365]
+  },
+  "conquistas": {
+    "curta": { "nome": "Primeiro truque", "icone": "🏆" },
+    "longa": { "nome": "Fim de semana em dia por um mês inteiro", "icone": "📅" }
+  },
+  "desafios": {
+    "normal": { "titulo": "Mês do Dá a Pata", "participantes": 1234 },
+    "longo": { "titulo": "Desafio de Outubro: andar sem puxar a guia no quarteirão", "participantes": 98765 }
+  },
+  "paletas": ["caramelo", "noite"]
+}
