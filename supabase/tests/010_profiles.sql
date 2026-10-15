@@ -2,7 +2,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(30);
+select plan(36);
 
 -- Usuários de teste (o trigger cria os perfis).
 insert into auth.users (id, email, raw_user_meta_data) values
@@ -11,7 +11,11 @@ insert into auth.users (id, email, raw_user_meta_data) values
   ('33333333-3333-3333-3333-333333333333', 'carla.lima@exemplo.com', '{}'),
   ('44444444-4444-4444-4444-444444444444', null, '{}'),
   ('55555555-5555-5555-5555-555555555555', 'x@exemplo.com',
-   jsonb_build_object('full_name', repeat('a', 39) || ' ' || repeat('b', 10)));
+   jsonb_build_object('full_name', repeat('a', 39) || ' ' || repeat('b', 10))),
+  ('77777777-7777-7777-7777-777777777777', 'd@exemplo.com',
+   jsonb_build_object('full_name', 'Dani' || chr(8238) || 'ela' || chr(10))),
+  ('88888888-8888-8888-8888-888888888888', 'eva@exemplo.com',
+   jsonb_build_object('full_name', chr(8237) || chr(9)));
 
 -- Trigger em auth.users
 select is(
@@ -33,6 +37,14 @@ select is(
 select is(
   (select display_name from public.profiles where id = '55555555-5555-5555-5555-555555555555'),
   repeat('a', 39), 'nome longo é cortado em 40 e sem espaço sobrando'
+);
+select is(
+  (select display_name from public.profiles where id = '77777777-7777-7777-7777-777777777777'),
+  'Dani ela', 'trigger troca controle e direção de texto do nome do provedor por espaço'
+);
+select is(
+  (select display_name from public.profiles where id = '88888888-8888-8888-8888-888888888888'),
+  'eva', 'nome só com controle cai na parte local do e-mail'
 );
 select results_eq(
   $$ select is_adult_confirmed, adult_confirmed_at is null, timezone, day_cutoff_hour, reminder_hour
@@ -89,6 +101,22 @@ select throws_ok(
   '23514', null, 'nome com 41 caracteres é recusado'
 );
 select throws_ok(
+  $$ update public.profiles set display_name = 'Ana' || chr(10) || 'Souza' where id = '11111111-1111-1111-1111-111111111111' $$,
+  '23514', null, 'nome com quebra de linha é recusado'
+);
+select throws_ok(
+  $$ update public.profiles set display_name = 'Ana' || chr(8238) || 'azuoS' where id = '11111111-1111-1111-1111-111111111111' $$,
+  '23514', null, 'nome com caractere de direção (U+202E) é recusado'
+);
+select throws_ok(
+  $$ update public.profiles set display_name = chr(8294) || 'Ana' where id = '11111111-1111-1111-1111-111111111111' $$,
+  '23514', null, 'nome com isolamento de direção (U+2066) é recusado'
+);
+select lives_ok(
+  $$ update public.profiles set display_name = 'Ana Souza 🐶 ção' where id = '11111111-1111-1111-1111-111111111111' $$,
+  'nome com acento e emoji continua aceito'
+);
+select throws_ok(
   $$ update public.profiles set day_cutoff_hour = 7 where id = '11111111-1111-1111-1111-111111111111' $$,
   '23514', null, 'virada do dia fora de 0-6 é recusada'
 );
@@ -109,7 +137,7 @@ reset role;
 select results_eq(
   $$ select display_name, timezone, day_cutoff_hour, reminder_hour, is_adult_confirmed, adult_confirmed_at is not null
        from public.profiles where id = '11111111-1111-1111-1111-111111111111' $$,
-  $$ values ('Ana', 'America/Manaus', 3, 8, true, true) $$,
+  $$ values ('Ana Souza 🐶 ção', 'America/Manaus', 3, 8, true, true) $$,
   'perfil da Ana ficou com as preferências e a maioridade confirmada'
 );
 select results_eq(

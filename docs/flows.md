@@ -912,3 +912,8 @@ sequenceDiagram
 | `RPC:upsert_push_token` (troca de dono) | O mesmo aparelho usado por outra conta (F29) | 8 |
 | View pública da biblioteca sem os campos Premium | A lista não pode vazar o `video_url` e os passos (F15) | 4 |
 | `reviewed_at` em exercises/programs | Rastreabilidade da revisão (F39) | 4 |
+| Limite de troca de fuso/virada do dia: 1 por 24 h (`timezone_changed_at` + trigger) e sem fusos `Etc/`, `posix/` e `right/` | Trocar o fuso em sequência permite gravar um treino atrasado num dia lógico já fechado (ADR-05; revisão de segurança da Fase 1) | 6 |
+| Tabelas novas exigem 18+ confirmado no banco (`with check` com `profiles.is_adult_confirmed`) | Quem chama o PostgREST direto pula o onboarding (ADR-08; revisão de segurança da Fase 1) | 2 |
+| Testes pgTAP extras de privilégio em `profiles` | `anon` sem update; `authenticated` sem alterar `id`/`created_at`; sem executar `handle_new_user`/`profiles_validate_timezone`; `search_path` e `security definer` do `handle_new_user`; update no perfil de outro conferido direto (revisão de segurança da Fase 1) | 2 |
+| Sessão em armazenamento cifrado (chave no `expo-secure-store`, padrão "LargeSecureStore" do Supabase) | Hoje o refresh token fica em texto no AsyncStorage (revisão de segurança da Fase 1) | 14 |
+| App Links / Universal Links (`https://<domínio>/auth`) no lugar do `patinha://` | Outro app pode registrar o esquema `patinha://` no Android e receber o código (revisão de segurança da Fase 1) | 15 |

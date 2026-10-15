@@ -15,6 +15,11 @@ describe('validateDisplayName (F02-1e, F05)', () => {
   it('normaliza tirando espaços das pontas', () => {
     expect(normalizeName('  Ana  ')).toBe('Ana');
   });
+  it('troca controle e direção de texto por espaço (o banco recusa)', () => {
+    expect(normalizeName('Ana\nSouza')).toBe('Ana Souza');
+    expect(normalizeName('Dani\u202Eela')).toBe('Dani ela');
+    expect(validateDisplayName('\u202E\t')).toBe(MSG_NOME_INVALIDO);
+  });
 });
 
 describe('timezoneOptions', () => {

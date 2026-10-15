@@ -10,9 +10,21 @@ O app entra com Google pelo navegador do sistema (ADR-03): `signInWithOAuth` (PK
 |---|---|
 | Development build, preview interno, loja | `patinha://auth` |
 | Expo Go (`npx expo start`) | `exp://<IP do computador>:8081/--/auth` |
-| Expo Go abrindo o QR do PR (EAS Update) | `exp://u.expo.dev/<...>/--/auth` |
+| Expo Go abrindo o QR do PR (EAS Update) | `exp://u.expo.dev/<project-id>/.../--/auth` |
 
-Como o endereço do Expo Go muda com o IP e o update, as Redirect URLs são cadastradas com curinga.
+O `<project-id>` do EAS é `3f416ac5-2de9-40e8-a144-751e9a0ce2cd` (em `app.config.ts`).
+
+**Conferir a URL gerada:**
+- Em desenvolvimento (`npx expo start`), o app escreve no log do Metro: `[auth] URL de retorno (makeRedirectUri): ...`.
+- No preview do PR, o app roda sem `__DEV__` e o log não aparece. Nesse caso, a URL de retorno é o endereço do projeto que o Expo Go mostra em "Recently opened" (Recentes), seguido de `/--/auth`.
+- Ela precisa casar com uma das Redirect URLs cadastradas. Se não casar, o Supabase manda para a Site URL e o login não volta para o app.
+
+**Por que não usar curinga de host na nuvem:**
+- `exp://**` aceita qualquer servidor.
+- Um atacante pode mandar a um testador um link de login que termina em `exp://servidor-dele/--/auth`.
+- O Expo Go abre o app do atacante, que recebe o código e fica com a sessão do testador.
+- O PKCE não protege nesse caso, porque o fluxo foi iniciado pelo atacante.
+- `exp://**` fica **só** no `supabase/config.toml` local.
 
 ## Passos manuais (uma vez)
 
@@ -36,17 +48,29 @@ Como o endereço do Expo Go muda com o IP e o update, as Redirect URLs são cada
    - ligue o provedor;
    - cole o Client ID e o Client secret;
    - salve.
-2. **Authentication → URL Configuration → Redirect URLs**, adicione as duas:
-   - `patinha://**`
-   - `exp://**`
-3. **Site URL:** pode ficar `patinha://auth`.
-4. Rode **Actions → db-dev → Run workflow** para aplicar a migration de `profiles` no `patinha-dev`.
+2. **Authentication → URL Configuration → Redirect URLs**, cadastre só estas duas, exatamente assim:
+   - `patinha://auth`
+   - `exp://u.expo.dev/3f416ac5-2de9-40e8-a144-751e9a0ce2cd/**`
 
-Em produção (Fase 15), o projeto de produção do Supabase só precisa de `patinha://**`, porque o Expo Go não é usado lá.
+   Não cadastre `exp://**` nem `patinha://**` (veja acima).
+3. **Site URL:** pode ficar `patinha://auth`.
+4. **Desligue o provedor Email:** em **Authentication → Sign In / Providers → Email**, desligue **"Enable Email provider"** e salve.
+   - O login é só pelo Google (ADR-03).
+   - Com o e-mail ligado, qualquer pessoa com a anon key (que vai no app) cria contas por fora do Google.
+   - **Não** desligue o **"Allow new users to sign up"** geral (em Authentication → Sign In / Providers → User Signups): ele bloquearia também o primeiro acesso pelo Google.
+5. Rode **Actions → db-dev → Run workflow** para aplicar as migrations de `profiles` no `patinha-dev`.
+
+**Produção (Fase 15):**
+- Redirect URLs: só `patinha://auth`, porque o Expo Go não é usado lá.
+- Provedor Email também desligado (passo 4).
+
+**Expo Go apontando para o `patinha-dev` pela rede local:** o Google não volta para `exp://<IP>:8081`, porque essa URL não está cadastrada na nuvem. Para isso, use o Supabase local (seção 3) ou o "Entrar como teste".
 
 ### 3. Supabase local (opcional)
 
-O `supabase/config.toml` já libera `patinha://**` e `exp://**` em `additional_redirect_urls`. Para testar o Google contra o banco local:
+O `supabase/config.toml` libera `patinha://**` e `exp://**` em `additional_redirect_urls` (só local). O provedor de e-mail fica **ligado só no local**: no Supabase CLI, `[auth.email] enable_signup = false` desliga o provedor inteiro, inclusive o login com senha do "Entrar como teste". Depois de mudar o `config.toml`, reinicie com `make db-down && make db-up`.
+
+Para testar o Google contra o banco local:
 
 1. Adicione o bloco abaixo ao `config.toml`, sem commitar os valores:
    ```toml

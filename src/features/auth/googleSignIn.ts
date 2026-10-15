@@ -24,6 +24,10 @@ export async function signInWithGoogle(): Promise<LoginResult> {
   if (net.isConnected === false) return { ok: false, message: MSG_SEM_CONEXAO };
 
   const redirectTo = getRedirectUrl();
+  if (__DEV__) {
+    // Confira se bate com uma Redirect URL cadastrada no Supabase (docs/auth.md).
+    console.log(`[auth] URL de retorno (makeRedirectUri): ${redirectTo}`);
+  }
   const { data, error } = await getSupabase().auth.signInWithOAuth({
     provider: 'google',
     options: { redirectTo, skipBrowserRedirect: true },
