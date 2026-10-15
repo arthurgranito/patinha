@@ -91,6 +91,11 @@ eas.json                perfis development, preview e production
 - `designer-cards`: cards de story em `src/features/cards`.
 - `social-media`: posts, roteiros e calendários em `marketing/`.
 
+## CI e preview
+- `ci.yml`: lint, typecheck, Jest, expo-doctor, export e pgTAP em todo PR.
+- `preview.yml` (Fase P): em todo PR publica um EAS Update e comenta o QR code (Expo Go até a Fase 7). Usa `EXPO_GO_PREVIEW=true` para o runtime `exposdk:<SDK>`; ver `app.config.ts`.
+- `db-dev.yml` (manual): aplica `supabase/migrations` no projeto `patinha-dev` (seed opcional). Rode antes de testar no preview um PR que traga migration.
+
 ## Sessões na nuvem
 - `.claude/hooks/session-start.sh` (SessionStart, só com `CLAUDE_CODE_REMOTE=true`): roda `npm ci` quando o lockfile mudou, inicia o `dockerd` se preciso e sobe o Supabase local. Logs em `$TMPDIR/patinha-session-start/`.
 - MCP `supabase-local` (`.mcp.json`) aponta para `http://localhost:54321/mcp` e só funciona com o Supabase local de pé.
