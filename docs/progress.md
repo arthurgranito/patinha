@@ -7,7 +7,7 @@ Atualizado pela skill `implementar-fase`. Uma linha por fase; a "próxima fase" 
 | V | Validação (docs/validacao.md) | ⬜ |  | R$ 0 | não é código |
 | 0 | Fundação do projeto | ✅ | 2026-10-15 | R$ 0 | Conferido: Expo Go e CI verde. `make db-up` dispensado pelo usuário (testado no ambiente na nuvem e no CI). TODO(fase 1): redirecionar (app)→(auth) sem sessão e tela de login real em `app/(auth)/entrar.tsx`. `expo-dev-client` entra quando houver o 1º development build (Fase 8). |
 | P | Preview por PR (EAS Update) | ✅ | 2026-10-15 | R$ 0 | Conferido: QR no PR abriu no Expo Go (runtime exposdk:57.0.0). `.github/workflows/preview.yml` (QR do Expo Go em cada PR) e `db-dev.yml` (manual: migrations no patinha-dev). TODO(fase 8): preview passa a mirar o development build; sai o `EXPO_GO_PREVIEW`. |
-| 1 | Login e perfil | ⬜ |  | R$ 0 |  |
+| 1 | Login e perfil | 🔍 | 2026-10-15 | R$ 0 | Passos manuais em `docs/auth.md` (Google Cloud, Redirect URLs `patinha://**` e `exp://**`, `db-dev`). TODO(fase 2): FK de `profiles.active_dog_id`. TODO(fase 3): cadastro do cão real e ramo "sem cão" do F03; grant de `active_dog_id` (F11). TODO(fase 8): apagar o token de push ao sair. TODO(fase 10): aviso da fila offline ao sair. TODO(fase 13): eventos `signup`/`onboarding_completed`, Sentry no X.3, termos definitivos. TODO(fase 14): Entrar com Apple. |
 | 2 | Esquema completo, RLS e seeds | ⬜ |  | R$ 0 |  |
 | 3 | Cadastro do cão | ⬜ |  | R$ 0 |  |
 | 4 | Conteúdo: pipeline, vídeos e biblioteca | ⬜ |  | R$ 0 |  |
@@ -39,6 +39,15 @@ Decisões tomadas durante a implementação que divergem do roadmap ou dos fluxo
 - **Fase P — runtime do preview.** O Expo Go só abre updates com runtime `exposdk:<SDK>`; com a política `fingerprint` o QR abriria um erro de incompatibilidade. O `preview.yml` liga `EXPO_GO_PREVIEW=true`, e o `app.config.ts` troca para a política `sdkVersion` (`exposdk:57.0.0`) só nesse caso. Builds e updates reais seguem com `fingerprint`. Teste: `__tests__/app-config.test.ts`.
 - **Fase P — comando do preview.** `eas update --auto --branch <branch do PR> --environment preview --platform all`: o `--branch` explícito porque o checkout do PR fica em HEAD destacado, e o `--environment` porque o eas-cli exige a partir do SDK 55. As `EXPO_PUBLIC_*` vêm dos secrets do GitHub; se você criar variáveis com o mesmo nome no ambiente `preview` do EAS, confira qual valor prevalece. PRs de forks não publicam preview (não recebem secrets).
 - **Fase P — `db-dev` com `--dry-run`.** Além do seed opcional (`--include-seed`), o workflow tem a opção de só listar as migrations. O seed roda a cada vez que for marcado: os seeds das próximas fases precisam ser idempotentes (`on conflict do nothing`).
+
+- **Fase 1 — branch.** A skill pede `fase-1-login-e-perfil`; o trabalho foi feito em `claude/sharp-cerf-hmq8sf`, a branch designada pela sessão na nuvem.
+- **Fase 1 — login de teste.** Fora do roadmap, a pedido do usuário, para o Maestro: botão "Entrar como teste", só com `__DEV__` e `EXPO_PUBLIC_DEV_LOGIN=true`. O `require` dele é condicional a `__DEV__`, então o Metro o corta dos bundles de produção (preview e loja); `scripts/check-bundle.sh` (dentro do `npm run export:check`, no CI) falha se ele aparecer. O usuário `teste@patinha.local` fica em `supabase/dev/usuario-teste.sql`, aplicado só por `make db-reset`/`make db-dev-login`, e não no `seed.sql`, porque o `db-dev` pode rodar o seed no `patinha-dev`. Testes: `src/features/auth/__tests__/devLogin.test.ts` e `__tests__/entrar.test.tsx`.
+- **Fase 1 — fuso validado por trigger** (`profiles_validate_timezone`, contra `pg_timezone_names`), não por check constraint.
+- **Fase 1 — sair só neste aparelho:** `signOut({ scope: 'local' })`, porque o padrão do supabase-js encerra as sessões em todos os aparelhos.
+- **Fase 1 — nome de reserva no trigger:** sem `full_name`/`name` do provedor, usa a parte local do e-mail ou "Tutor" (sempre 1 a 40 caracteres).
+- **Fase 1 — rota de onboarding em vez de `Stack.Protected` dentro de (app):** (abas) e cadastro-cao redirecionam para `/onboarding` sem 18+; assim o onboarding consegue levar para o cadastro do cão logo depois de confirmar.
+- **Fase 1 — contraste (X.5):** no tema claro, `onPrimary` passou de branco para grafite (2,46:1 → 6,96:1), `success` e `danger` escureceram e entrou o token `link`. Teste em `src/lib/__tests__/theme.test.ts`.
+- **Fase 1 — fusos no Perfil:** a tela oferece os fusos do Brasil e o do aparelho (o banco aceita qualquer fuso IANA).
 
 ### Como abrir o preview de um PR no celular
 
