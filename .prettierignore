@@ -1,0 +1,10 @@
+node_modules
+.expo
+dist
+coverage
+supabase/.temp
+src/lib/database.types.ts
+docs
+content
+.claude
+*.md
