@@ -6,7 +6,7 @@ Atualizado pela skill `implementar-fase`. Uma linha por fase; a "próxima fase" 
 |---|---|---|---|---|---|
 | V | Validação (docs/validacao.md) | ⬜ |  | R$ 0 | não é código |
 | 0 | Fundação do projeto | ✅ | 2026-10-15 | R$ 0 | Conferido: Expo Go e CI verde. `make db-up` dispensado pelo usuário (testado no ambiente na nuvem e no CI). TODO(fase 1): redirecionar (app)→(auth) sem sessão e tela de login real em `app/(auth)/entrar.tsx`. `expo-dev-client` entra quando houver o 1º development build (Fase 8). |
-| P | Preview por PR (EAS Update) | 🔍 | 2026-10-15 | R$ 0 | `.github/workflows/preview.yml` (QR do Expo Go em cada PR) e `db-dev.yml` (manual: migrations no patinha-dev). TODO(fase 8): preview passa a mirar o development build; sai o `EXPO_GO_PREVIEW`. |
+| P | Preview por PR (EAS Update) | ✅ | 2026-10-15 | R$ 0 | Conferido: QR no PR abriu no Expo Go (runtime exposdk:57.0.0). `.github/workflows/preview.yml` (QR do Expo Go em cada PR) e `db-dev.yml` (manual: migrations no patinha-dev). TODO(fase 8): preview passa a mirar o development build; sai o `EXPO_GO_PREVIEW`. |
 | 1 | Login e perfil | ⬜ |  | R$ 0 |  |
 | 2 | Esquema completo, RLS e seeds | ⬜ |  | R$ 0 |  |
 | 3 | Cadastro do cão | ⬜ |  | R$ 0 |  |
