@@ -1,4 +1,7 @@
+import { useNetInfo } from '@react-native-community/netinfo';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+
+import { MSG_OFFLINE } from '@/lib/mensagens';
 
 import { MSG_NOME_INVALIDO, MSG_SALVAR_FALHOU, MSG_SO_ADULTOS, MSG_TENHO_18 } from '../mensagens';
 import { OnboardingForm } from '../OnboardingForm';
@@ -13,6 +16,8 @@ async function setup(onSubmit = jest.fn().mockResolvedValue(undefined)) {
   );
   return { onSubmit, button: () => screen.getByRole('button', { name: 'Continuar' }) };
 }
+
+afterEach(() => (useNetInfo as jest.Mock).mockReturnValue({ isConnected: true }));
 
 describe('OnboardingForm (F02)', () => {
   it('vem com o nome do provedor e o fuso detectado', async () => {
@@ -53,6 +58,16 @@ describe('OnboardingForm (F02)', () => {
       expect(onSubmit).not.toHaveBeenCalled();
     },
   );
+
+  it('X.1: offline, Continuar fica desabilitado com "Você está offline"', async () => {
+    (useNetInfo as jest.Mock).mockReturnValue({ isConnected: false });
+    const { onSubmit, button } = await setup();
+    await fireEvent.press(screen.getByRole('checkbox', { name: MSG_TENHO_18 }));
+    expect(screen.getByText(MSG_OFFLINE)).toBeTruthy();
+    expect(button()).toBeDisabled();
+    await fireEvent.press(button());
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
 
   it('falha ao salvar mostra a mensagem de tentar de novo', async () => {
     const { button } = await setup(jest.fn().mockRejectedValue(new Error('rede')));

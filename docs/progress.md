@@ -47,6 +47,7 @@ Decisões tomadas durante a implementação que divergem do roadmap ou dos fluxo
 - **Fase 1 — nome de reserva no trigger:** sem `full_name`/`name` do provedor, usa a parte local do e-mail ou "Tutor" (sempre 1 a 40 caracteres).
 - **Fase 1 — rota de onboarding em vez de `Stack.Protected` dentro de (app):** (abas) e cadastro-cao redirecionam para `/onboarding` sem 18+; assim o onboarding consegue levar para o cadastro do cão logo depois de confirmar.
 - **Fase 1 — contraste (X.5):** no tema claro, `onPrimary` passou de branco para grafite (2,46:1 → 6,96:1), `success` e `danger` escureceram e entrou o token `link`. Teste em `src/lib/__tests__/theme.test.ts`.
+- **Fase 1 — revisões (revisor-seguranca e verificador-fluxos).** Corrigidos: ErrorBoundary na raiz com a mensagem do X.3 (antes só a falha ao carregar o perfil tinha); X.1 nas ações desta fase ("Continuar" e "Salvar" desabilitados com "Você está offline"); `scripts/check-bundle.sh` agora falha se o export não existir ou o grep der erro (antes aprovava). Pendentes, aguardando decisão: Redirect URL `exp://**` na nuvem, cadastro por e-mail ligado no Supabase em nuvem e limite de troca de fuso/virada (ver o relatório da revisão na conversa da Fase 1).
 - **Fase 1 — fusos no Perfil:** a tela oferece os fusos do Brasil e o do aparelho (o banco aceita qualquer fuso IANA).
 
 ### Como abrir o preview de um PR no celular

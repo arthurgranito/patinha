@@ -1,11 +1,9 @@
 import { Stack } from 'expo-router';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 
-import { Button } from '@/components/ui/Button';
+import { ErrorScreen } from '@/components/ui/ErrorScreen';
 import { Screen } from '@/components/ui/Screen';
-import { Text } from '@/components/ui/Text';
 import { useAuth } from '@/features/auth/AuthProvider';
-import { MSG_ERRO_INESPERADO } from '@/features/profile/mensagens';
 import { ProfileProvider, useProfile } from '@/features/profile/ProfileProvider';
 import { useTheme } from '@/lib/theme';
 
@@ -22,15 +20,7 @@ function AppStack() {
   }
 
   if (error || !profile) {
-    // X.3 — erro inesperado. TODO(fase 13): enviar ao Sentry.
-    return (
-      <Screen centered>
-        <View style={{ gap: theme.spacing.md, alignItems: 'center' }}>
-          <Text style={{ textAlign: 'center' }}>{MSG_ERRO_INESPERADO}</Text>
-          <Button label="Tentar de novo" onPress={reload} />
-        </View>
-      </Screen>
-    );
+    return <ErrorScreen onRetry={reload} />;
   }
 
   // Sem 18+ confirmado, (abas) e cadastro-cao redirecionam para o onboarding (F02).

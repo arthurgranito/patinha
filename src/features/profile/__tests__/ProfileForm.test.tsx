@@ -1,5 +1,8 @@
+import { useNetInfo } from '@react-native-community/netinfo';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { Alert } from 'react-native';
+
+import { MSG_OFFLINE } from '@/lib/mensagens';
 
 import type { Profile } from '../api';
 import { MSG_SAIR_CONFIRMA, MSG_SALVAR_FALHOU, MSG_VALE_DAQUI_PRA_FRENTE } from '../mensagens';
@@ -74,6 +77,18 @@ describe('ProfileForm (F05)', () => {
     await fireEvent.press(mais);
     expect(screen.getByText('6h')).toBeTruthy();
     expect(mais).toBeDisabled();
+  });
+
+  it('X.1: offline, Salvar fica desabilitado com "Você está offline"', async () => {
+    (useNetInfo as jest.Mock).mockReturnValue({ isConnected: false });
+    try {
+      await setup();
+      await fireEvent.changeText(screen.getByDisplayValue('Ana'), 'Ana Souza');
+      expect(screen.getByText(MSG_OFFLINE)).toBeTruthy();
+      expect(screen.getByRole('button', { name: 'Salvar' })).toBeDisabled();
+    } finally {
+      (useNetInfo as jest.Mock).mockReturnValue({ isConnected: true });
+    }
   });
 
   it('falha de rede ao salvar', async () => {

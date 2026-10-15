@@ -3,9 +3,11 @@ import { useState } from 'react';
 import { View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
+import { OfflineNotice } from '@/components/ui/OfflineNotice';
 import { Text } from '@/components/ui/Text';
 import { TextField } from '@/components/ui/TextField';
 import { useTheme } from '@/lib/theme';
+import { useOnline } from '@/lib/useOnline';
 
 import { Checkbox } from './Checkbox';
 import { MSG_SALVAR_FALHOU, MSG_SO_ADULTOS, MSG_TENHO_18 } from './mensagens';
@@ -20,6 +22,7 @@ type Props = {
 /** F02 — onboarding pessoal: nome, 18+ obrigatório e fuso detectado. */
 export function OnboardingForm({ initialName, timezone, onSubmit }: Props) {
   const theme = useTheme();
+  const online = useOnline();
   const [name, setName] = useState(initialName);
   const [adult, setAdult] = useState(false);
   const [nameError, setNameError] = useState<string | null>(null);
@@ -30,7 +33,7 @@ export function OnboardingForm({ initialName, timezone, onSubmit }: Props) {
     const error = validateDisplayName(name);
     setNameError(error);
     setSubmitError(null);
-    if (error || !adult) return;
+    if (error || !adult || !online) return;
     setSaving(true);
     try {
       await onSubmit({ displayName: normalizeName(name), timezone });
@@ -83,7 +86,13 @@ export function OnboardingForm({ initialName, timezone, onSubmit }: Props) {
         </Text>
       ) : null}
 
-      <Button label="Continuar" disabled={!adult} loading={saving} onPress={handleSubmit} />
+      {!online ? <OfflineNotice /> : null}
+      <Button
+        label="Continuar"
+        disabled={!adult || !online}
+        loading={saving}
+        onPress={handleSubmit}
+      />
     </View>
   );
 }

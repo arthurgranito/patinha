@@ -42,6 +42,9 @@ function RootNavigator() {
   );
 }
 
+// X.3: o Expo Router usa este export para erros de renderização nas rotas.
+export { RootErrorBoundary as ErrorBoundary } from '@/components/ui/ErrorScreen';
+
 export default function RootLayout() {
   const theme = useTheme();
   return (

@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { Alert, Pressable, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
+import { OfflineNotice } from '@/components/ui/OfflineNotice';
 import { Stepper } from '@/components/ui/Stepper';
 import { Text } from '@/components/ui/Text';
 import { TextField } from '@/components/ui/TextField';
 import { useTheme } from '@/lib/theme';
+import { useOnline } from '@/lib/useOnline';
 
 import type { Profile, ProfilePreferences } from './api';
 import { MSG_SAIR_CONFIRMA, MSG_SALVAR_FALHOU, MSG_VALE_DAQUI_PRA_FRENTE } from './mensagens';
@@ -22,6 +24,7 @@ type Props = {
 /** F05 (editar perfil e preferências) + F04 (sair). */
 export function ProfileForm({ profile, deviceTimezone, onSave, onSignOut }: Props) {
   const theme = useTheme();
+  const online = useOnline();
   const [name, setName] = useState(profile.display_name);
   const [timezone, setTimezone] = useState(profile.timezone);
   const [cutoff, setCutoff] = useState(profile.day_cutoff_hour);
@@ -39,7 +42,7 @@ export function ProfileForm({ profile, deviceTimezone, onSave, onSignOut }: Prop
   async function handleSave() {
     const error = validateDisplayName(name);
     setNameError(error);
-    if (error) return;
+    if (error || !online) return;
     setSaving(true);
     setStatus('idle');
     try {
@@ -160,7 +163,8 @@ export function ProfileForm({ profile, deviceTimezone, onSave, onSignOut }: Prop
         </Text>
       ) : null}
 
-      <Button label="Salvar" disabled={!dirty} loading={saving} onPress={handleSave} />
+      {!online ? <OfflineNotice /> : null}
+      <Button label="Salvar" disabled={!dirty || !online} loading={saving} onPress={handleSave} />
       <Button label="Sair" variant="secondary" onPress={confirmSignOut} />
     </View>
   );
