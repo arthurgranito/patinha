@@ -1,0 +1,50 @@
+name: db-dev
+
+# Manual: aplica as migrations no projeto Supabase de desenvolvimento (patinha-dev),
+# o banco usado pelos previews dos PRs. Actions → db-dev → Run workflow.
+on:
+  workflow_dispatch:
+    inputs:
+      seed:
+        description: 'Rodar também o supabase/seed.sql'
+        type: boolean
+        default: false
+      dry_run:
+        description: 'Só listar o que seria aplicado (--dry-run)'
+        type: boolean
+        default: false
+
+concurrency:
+  group: db-dev
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  push:
+    name: Migrations no patinha-dev
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DEV_DB_PASSWORD }}
+      SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_DEV_PROJECT_REF }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: supabase link
+        run: supabase link --project-ref "$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD"
+
+      - name: supabase db push
+        env:
+          SEED: ${{ inputs.seed }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          args=(--password "$SUPABASE_DB_PASSWORD")
+          if [ "$SEED" = "true" ]; then args+=(--include-seed); fi
+          if [ "$DRY_RUN" = "true" ]; then args+=(--dry-run); fi
+          supabase db push "${args[@]}"
