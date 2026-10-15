@@ -32,6 +32,8 @@ export function getSupabase(): SupabaseClient<Database> {
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: false,
+      // PKCE: o login pelo navegador volta com ?code=, trocado em src/features/auth/session.ts.
+      flowType: 'pkce',
     },
   });
 
