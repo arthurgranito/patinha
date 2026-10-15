@@ -5,13 +5,29 @@ export type Database = {
   
   "public": {
           Tables: {
-            [_ in never]: never
+            "profiles": {
+                  Row: {
+                    "active_dog_id": string | null,"adult_confirmed_at": string | null,"created_at": string,"day_cutoff_hour": number,"display_name": string,"id": string,"is_adult_confirmed": boolean,"reminder_hour": number,"timezone": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "active_dog_id"?: string | null,"adult_confirmed_at"?: string | null,"created_at"?: string,"day_cutoff_hour"?: number,"display_name": string,"id": string,"is_adult_confirmed"?: boolean,"reminder_hour"?: number,"timezone"?: string
+                  }
+                  Update: {
+                    "active_dog_id"?: string | null,"adult_confirmed_at"?: string | null,"created_at"?: string,"day_cutoff_hour"?: number,"display_name"?: string,"id"?: string,"is_adult_confirmed"?: boolean,"reminder_hour"?: number,"timezone"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                }
           }
           Views: {
             [_ in never]: never
           }
           Functions: {
-            [_ in never]: never
+            "confirm_adult":
+{ Args: Record<PropertyKey, never>; Returns: undefined
+                           }
           }
           Enums: {
             [_ in never]: never
