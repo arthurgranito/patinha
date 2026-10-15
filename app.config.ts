@@ -3,6 +3,13 @@ import type { ExpoConfig } from 'expo/config';
 // Project ID do EAS (expo.dev → projeto patinha). Público: não é segredo.
 const EAS_PROJECT_ID = '3f416ac5-2de9-40e8-a144-751e9a0ce2cd';
 
+// Preview por PR (Fase P): o Expo Go só abre updates com runtime "exposdk:<SDK>",
+// então o workflow de preview liga EXPO_GO_PREVIEW=true e publica com a política
+// sdkVersion. Builds e updates de verdade continuam com fingerprint.
+// TODO(fase 8): com o 1º development build, o preview passa a mirar o canal dele
+// (fingerprint) e esta chave sai.
+const EXPO_GO_PREVIEW = process.env.EXPO_GO_PREVIEW === 'true';
+
 const config: ExpoConfig = {
   name: 'Patinha',
   slug: 'patinha',
@@ -13,7 +20,7 @@ const config: ExpoConfig = {
   userInterfaceStyle: 'automatic',
   // Política fingerprint: o runtime muda sozinho quando o código nativo muda,
   // então um EAS Update nunca cai num binário incompatível.
-  runtimeVersion: { policy: 'fingerprint' },
+  runtimeVersion: EXPO_GO_PREVIEW ? { policy: 'sdkVersion' } : { policy: 'fingerprint' },
   updates: {
     url: `https://u.expo.dev/${EAS_PROJECT_ID}`,
   },
