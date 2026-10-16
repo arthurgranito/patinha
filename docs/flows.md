@@ -442,7 +442,7 @@ flowchart TD
 - **Ator:** Tutor. **Gatilho:** resposta em "Como foi?".
 
 **Passos:**
-1. → insert em `training_sessions` `{dog_id, exercise_id, level, result, duration_sec, dog_program_id}`.
+1. → insert em `training_sessions` `{dog_id, exercise_id, result, duration_sec, dog_program_id}` (o `level` gravado é sempre o nível atual em `dog_skills`; o primeiro treino é no nível 1).
 2. → o trigger BEFORE confere o dono, o dia lógico, hoje/ontem e o acesso Premium.
 3. → o trigger AFTER cuida de:
    - **progressão em `dog_skills`:** "conseguiu" soma 1; "quase" mantém; "ainda_nao" zera; com 3 acertos seguidos, sobe de nível; no nível 4, grava `mastered_at`;
@@ -460,8 +460,8 @@ flowchart TD
 - **Offline:** o resultado vai para a fila local (F31), e a progressão aparece "prevista" até sincronizar.
 
 **Erros:**
-- **2e. Exercício Premium sem assinatura:** "Esse exercício é do Premium." (só acontece se alguém burlar a interface)
-- **2e. Fora de hoje/ontem** (fila antiga): o item é descartado com o aviso do F31.
+- **2e. Exercício Premium sem assinatura:** "Esse exercício é do Premium." (só acontece se alguém burlar a interface; código `PA003`)
+- **2e. Fora de hoje/ontem** (fila antiga): o item é descartado com o aviso do F31 (código `PA004`).
 
 **Efeitos:** eventos `session_done`, `level_up` e `skill_mastered`.
 
@@ -476,11 +476,11 @@ flowchart TD
 - **Exercício acima da idade do cão:** "Esse exercício é para cães a partir de 4 meses. Que tal o Fundamentos?"
 
 #### F21 — Desfazer um resultado
-- **Ator:** Tutor. **Gatilho:** Carteirinha → Histórico → toque num resultado com até 24 h → "Desfazer".
+- **Ator:** Tutor. **Gatilho:** Carteirinha → Histórico → toque num resultado recebido pelo servidor há até 24 h (`created_at`, não `done_at`: um treino de ontem sincronizado hoje pela fila offline continua desfazível) → "Desfazer".
 
 **Passos:**
 1. Confirmação: "Desfazer o resultado 'Conseguiu' de Senta (hoje, 19:42)?"
-2. → delete (RLS: o próprio registro, até 24 h) → `RPC:recompute_skill(dog_id, exercise_id)` recalcula o nível a partir das sessões restantes.
+2. → delete (RLS: o próprio registro, até 24 h depois de `created_at`) → `RPC:recompute_skill(dog_id, exercise_id)` recalcula o nível a partir das sessões restantes e o `dog_days` do dia (sem outra sessão no dia, o dia deixa de contar).
 
 **Alternativos:**
 - **O cão tinha subido de nível com esse resultado:** o nível volta; as conquistas ganhas **não** são retiradas.
@@ -907,16 +907,17 @@ sequenceDiagram
 
 | Item | Por quê | Fase |
 |---|---|---|
-| `RPC:recompute_skill` | Desfazer um resultado precisa recalcular o nível com segurança (F21) | 6 |
+| `RPC:recompute_skill` | Desfazer um resultado precisa recalcular o nível e o `dog_days` do dia com segurança (F21); hoje o delete não mexe em `dog_skills` nem em `dog_days` | 6 |
 | Opção "O cão partiu 🌈" ao arquivar | Tom e respeito: nunca mais lembrar nem gerar card daquele cão (F12) | 3 |
 | Tabela `rc_events(id text PK, processed_at)` | Idempotência do webhook do RevenueCat (F36) | 12 |
 | Arquivamento dos cães extras quando o Premium expira | Cumprir o limite de 1 cão sem apagar nada (F36) | 12 |
 | `app_config.min_version` + tela de atualização obrigatória | Mudanças nativas que exigem a versão nova da loja (F32) | 14 |
 | `RPC:upsert_push_token` (troca de dono) | O mesmo aparelho usado por outra conta (F29) | 8 |
-| View pública da biblioteca sem os campos Premium | A lista não pode vazar o `video_url` e os passos (F15) | 4 |
+| View pública da biblioteca sem os campos Premium | A lista não pode vazar o `video_url` e os passos (F15). Desde a Fase 2, o grant por coluna em `exercises` já impede a leitura direta desses campos; o app precisa listar as colunas no `select` (sem `*`) | 4 |
 | `reviewed_at` em exercises/programs | Rastreabilidade da revisão (F39) | 4 |
 | Limite de troca de fuso/virada do dia: 1 por 24 h (`timezone_changed_at` + trigger) e sem fusos `Etc/`, `posix/` e `right/` | Trocar o fuso em sequência permite gravar um treino atrasado num dia lógico já fechado (ADR-05; revisão de segurança da Fase 1) | 6 |
-| Tabelas novas exigem 18+ confirmado no banco (`with check` com `profiles.is_adult_confirmed`) | Quem chama o PostgREST direto pula o onboarding (ADR-08; revisão de segurança da Fase 1) | 2 |
-| Testes pgTAP extras de privilégio em `profiles` | `anon` sem update; `authenticated` sem alterar `id`/`created_at`; sem executar `handle_new_user`/`profiles_validate_timezone`; `search_path` e `security definer` do `handle_new_user`; update no perfil de outro conferido direto (revisão de segurança da Fase 1) | 2 |
+| ~~Tabelas novas exigem 18+ confirmado no banco (`with check` com `profiles.is_adult_confirmed`)~~ feito na Fase 2 (`is_adult()`) | Quem chama o PostgREST direto pula o onboarding (ADR-08; revisão de segurança da Fase 1) | 2 |
+| ~~Testes pgTAP extras de privilégio em `profiles`~~ feito na Fase 2 (`015_profiles_privilegios.sql`) | `anon` sem update; `authenticated` sem alterar `id`/`created_at`; sem executar `handle_new_user`/`profiles_validate_timezone`; `search_path` e `security definer` do `handle_new_user`; update no perfil de outro conferido direto (revisão de segurança da Fase 1) | 2 |
 | Sessão em armazenamento cifrado (chave no `expo-secure-store`, padrão "LargeSecureStore" do Supabase) | Hoje o refresh token fica em texto no AsyncStorage (revisão de segurança da Fase 1) | 14 |
 | App Links / Universal Links (`https://<domínio>/auth`) no lugar do `patinha://` | Outro app pode registrar o esquema `patinha://` no Android e receber o código (revisão de segurança da Fase 1) | 15 |
+| `docs/conteudo.md`: conteúdo se despublica, não se apaga (`training_sessions.exercise_id`, `program_items`, `dog_skills` e `challenges` usam `on delete restrict`) | Apagar um exercício quebraria o histórico de treino (decisão da Fase 2) | 4 |
