@@ -54,10 +54,10 @@ select throws_ok(
   $$ update public.profiles set id = '15000000-0000-4000-8000-000000000009' where id = '15000000-0000-4000-8000-000000000001' $$,
   '42501', null, 'Pri não altera id'
 );
--- TODO(fase 3): grant de update em active_dog_id (F11). Por enquanto o app não altera a coluna.
-select throws_ok(
+-- F11 (Fase 3): o app troca o cão ativo.
+select lives_ok(
   $$ update public.profiles set active_dog_id = '15000000-0000-4000-8000-0000000000d1' where id = '15000000-0000-4000-8000-000000000001' $$,
-  '42501', null, 'active_dog_id ainda sem grant para o app'
+  'Pri escolhe o próprio cão como ativo'
 );
 
 reset role;
