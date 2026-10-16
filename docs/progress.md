@@ -7,8 +7,8 @@ Atualizado pela skill `implementar-fase`. Uma linha por fase; a "próxima fase" 
 | V | Validação (docs/validacao.md) | ⬜ |  | R$ 0 | não é código |
 | 0 | Fundação do projeto | ✅ | 2026-10-15 | R$ 0 | Conferido: Expo Go e CI verde. `make db-up` dispensado pelo usuário (testado no ambiente na nuvem e no CI). TODO(fase 1): redirecionar (app)→(auth) sem sessão e tela de login real em `app/(auth)/entrar.tsx`. `expo-dev-client` entra quando houver o 1º development build (Fase 8). |
 | P | Preview por PR (EAS Update) | ✅ | 2026-10-15 | R$ 0 | Conferido: QR no PR abriu no Expo Go (runtime exposdk:57.0.0). `.github/workflows/preview.yml` (QR do Expo Go em cada PR) e `db-dev.yml` (manual: migrations no patinha-dev). TODO(fase 8): preview passa a mirar o development build; sai o `EXPO_GO_PREVIEW`. |
-| 1 | Login e perfil | 🔍 | 2026-10-15 | R$ 0 | Passos manuais em `docs/auth.md` (Google Cloud, Redirect URLs `patinha://**` e `exp://**`, `db-dev`). TODO(fase 2): FK de `profiles.active_dog_id`. TODO(fase 3): cadastro do cão real e ramo "sem cão" do F03; grant de `active_dog_id` (F11). TODO(fase 8): apagar o token de push ao sair. TODO(fase 10): aviso da fila offline ao sair. TODO(fase 13): eventos `signup`/`onboarding_completed`, Sentry no X.3 (substitui o "Detalhes"), termos definitivos. TODO(fase 14): Entrar com Apple. |
-| 2 | Esquema completo, RLS e seeds | ⬜ |  | R$ 0 |  |
+| 1 | Login e perfil | ✅ | 2026-10-16 | R$ 0 | Conferido pelo usuário. Passos manuais em `docs/auth.md` (Google Cloud, Redirect URLs `patinha://**` e `exp://**`, `db-dev`). TODO(fase 2): FK de `profiles.active_dog_id`. TODO(fase 3): cadastro do cão real e ramo "sem cão" do F03; grant de `active_dog_id` (F11). TODO(fase 8): apagar o token de push ao sair. TODO(fase 10): aviso da fila offline ao sair. TODO(fase 13): eventos `signup`/`onboarding_completed`, Sentry no X.3 (substitui o "Detalhes"), termos definitivos. TODO(fase 14): Entrar com Apple. |
+| 2 | Esquema completo, RLS e seeds | 🟡 |  | R$ 0 |  |
 | 3 | Cadastro do cão | ⬜ |  | R$ 0 |  |
 | 4 | Conteúdo: pipeline, vídeos e biblioteca | ⬜ |  | R$ 0 |  |
 | 5 | Plano personalizado e treino do dia | ⬜ |  | R$ 0 |  |
