@@ -1,6 +1,6 @@
-import { AuthRetryableFetchError } from '@supabase/supabase-js';
+import { AuthRetryableFetchError, isAuthRetryableFetchError } from '@supabase/supabase-js';
 
-import { getSupabase } from '@/lib/supabase';
+import { getSupabase, isSupabaseConfigured } from '@/lib/supabase';
 
 import { MSG_LOGIN_CANCELADO, MSG_LOGIN_FALHOU, MSG_SEM_CONEXAO } from './mensagens';
 
@@ -56,4 +56,33 @@ export function completeSignInFromUrl(url: string): Promise<LoginResult> {
 /** Só para testes. */
 export function __resetExchangesForTests() {
   exchanges.clear();
+}
+
+/** F04 / X.2 / X.3: sai só deste aparelho (não usa a rede). */
+export async function signOutLocal(): Promise<void> {
+  if (!isSupabaseConfigured) return;
+  await getSupabase().auth.signOut({ scope: 'local' });
+}
+
+const VALIDACAO_TIMEOUT_MS = 8000;
+
+/**
+ * X.2: confere no servidor a sessão restaurada do aparelho. `true` só quando o servidor a
+ * recusa (usuário apagado, token inválido). Sem rede ou demorando, a sessão fica (uso offline).
+ */
+export async function isStoredSessionRejected(): Promise<boolean> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<'timeout'>((resolve) => {
+    timer = setTimeout(() => resolve('timeout'), VALIDACAO_TIMEOUT_MS);
+  });
+  try {
+    const result = await Promise.race([getSupabase().auth.getUser(), timeout]);
+    if (result === 'timeout') return false;
+    const { error } = result;
+    return Boolean(error) && !isAuthRetryableFetchError(error);
+  } catch {
+    return false;
+  } finally {
+    clearTimeout(timer);
+  }
 }

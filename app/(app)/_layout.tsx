@@ -9,6 +9,7 @@ import { useTheme } from '@/lib/theme';
 
 function AppStack() {
   const theme = useTheme();
+  const { signOut } = useAuth();
   const { profile, loading, error, reload } = useProfile();
 
   if (loading && !profile) {
@@ -20,7 +21,7 @@ function AppStack() {
   }
 
   if (error || !profile) {
-    return <ErrorScreen onRetry={reload} />;
+    return <ErrorScreen error={error} onRetry={reload} onSignOut={signOut} />;
   }
 
   // Sem 18+ confirmado, (abas) e cadastro-cao redirecionam para o onboarding (F02).

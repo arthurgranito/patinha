@@ -13,6 +13,7 @@ import {
 import { getSupabase, isSupabaseConfigured } from '@/lib/supabase';
 
 import { MSG_SESSAO_EXPIRADA } from './mensagens';
+import { isStoredSessionRejected, signOutLocal } from './session';
 
 type AuthContextValue = {
   session: Session | null;
@@ -37,13 +38,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const supabase = getSupabase();
     let active = true;
 
-    supabase.auth
-      .getSession()
-      .then(({ data }) => {
-        if (!active) return;
-        hadSession.current = Boolean(data.session);
-        setSession(data.session);
-      })
+    (async () => {
+      const { data } = await supabase.auth.getSession();
+      let restored = data.session;
+      // X.2: a sessão salva pode ser de um usuário apagado ou com token recusado. O PostgREST
+      // ainda aceitaria o JWT até expirar, e o app ficaria preso sem perfil.
+      if (restored && (await isStoredSessionRejected())) {
+        signingOut.current = true;
+        await signOutLocal();
+        restored = null;
+        if (active) setNotice(MSG_SESSAO_EXPIRADA);
+      }
+      if (!active) return;
+      hadSession.current = Boolean(restored);
+      setSession(restored);
+    })()
+      .catch(() => {})
       .finally(() => active && setLoading(false));
 
     const { data: sub } = supabase.auth.onAuthStateChange((event, next) => {
@@ -69,8 +79,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // F04: "neste aparelho". O escopo padrão (global) encerraria as sessões em todos os aparelhos.
     // TODO(fase 8): apagar o token deste aparelho em push_tokens antes de sair.
     // TODO(fase 10): avisar sobre itens na fila offline e limpar os caches de dados pessoais.
-    const { error } = await getSupabase().auth.signOut({ scope: 'local' });
-    if (error) signingOut.current = false;
+    try {
+      await signOutLocal();
+    } catch {
+      signingOut.current = false;
+    }
   }, []);
 
   const clearNotice = useCallback(() => setNotice(null), []);

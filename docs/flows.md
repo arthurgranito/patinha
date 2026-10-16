@@ -832,10 +832,13 @@ sequenceDiagram
 #### X.2 — Sessão expirada
 - **Renovação:** o `supabase-js` renova o token automaticamente quando o app volta para o primeiro plano.
 - **Se a renovação falhar:** o app vai para o login com "Sua sessão expirou. Entre de novo."
+- **Ao abrir o app:** a sessão salva no aparelho é conferida no servidor (`auth.getUser()`). Se o usuário não existe mais ou o token foi recusado, o app sai só deste aparelho e vai para o login com a mesma mensagem. Sem internet, a sessão fica (uso offline).
+- **Perfil ausente para um usuário válido:** o app cria o perfil com `RPC:ensure_profile` em vez de mostrar erro.
 - **Fila offline:** é mantida e enviada depois do login, se o usuário for o mesmo.
 
 #### X.3 — Erro inesperado
-- **Na tela:** "Algo deu errado do nosso lado. Já fomos avisados." com "Tentar de novo".
+- **Na tela:** "Algo deu errado do nosso lado. Já fomos avisados." com "Tentar de novo" e "Sair" (só deste aparelho, volta para a entrada), para o usuário nunca ficar preso.
+- **"Detalhes":** em desenvolvimento e nos previews (não em produção), mostra o código e a mensagem técnica do erro, até o Sentry entrar (Fase 13).
 - **No Sentry:** o erro chega com a versão do app, o canal do EAS Update e o usuário.
 
 #### X.4 — App em segundo plano durante a sessão
@@ -856,7 +859,7 @@ sequenceDiagram
 |---|---|---|
 | F01 Primeiro acesso | auth.users, profiles | `signInWithOAuth`, `exchangeCodeForSession`, `signInWithIdToken` (Apple), trigger de profiles |
 | F02 Onboarding pessoal | profiles | update, `RPC:confirm_adult` |
-| F03 Login | profiles, dogs | Auth |
+| F03 Login | profiles, dogs | Auth, `auth.getUser` (sessão salva), `RPC:ensure_profile` |
 | F04 Sair | push_tokens | `signOut`, delete do token |
 | F05 Perfil | profiles | update (grant por coluna) |
 | F06 Exportar | todas do usuário | `EF:export-data` |

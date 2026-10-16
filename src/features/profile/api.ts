@@ -11,14 +11,19 @@ export type ProfilePreferences = Pick<
   'display_name' | 'timezone' | 'day_cutoff_hour' | 'reminder_hour'
 >;
 
+/** Lê o perfil; se faltar (usuário válido sem linha em profiles), cria com ensure_profile(). */
 export async function fetchProfile(userId: string): Promise<Profile> {
-  const { data, error } = await getSupabase()
+  const supabase = getSupabase();
+  const { data, error } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', userId)
-    .single();
+    .maybeSingle();
   if (error) throw error;
-  return data;
+  if (data) return data;
+  const created = await supabase.rpc('ensure_profile');
+  if (created.error) throw created.error;
+  return created.data;
 }
 
 export async function updatePreferences(

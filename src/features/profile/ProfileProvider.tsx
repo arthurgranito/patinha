@@ -13,7 +13,8 @@ import { fetchProfile, type Profile } from './api';
 type ProfileContextValue = {
   profile: Profile | null;
   loading: boolean;
-  error: boolean;
+  /** Erro do último carregamento (para "Detalhes" na tela de erro). */
+  error: unknown;
   reload: () => void;
   setProfile: (profile: Profile) => void;
 };
@@ -24,14 +25,14 @@ const ProfileContext = createContext<ProfileContextValue | null>(null);
 export function ProfileProvider({ userId, children }: { userId: string; children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<unknown>(null);
   const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     let active = true;
     fetchProfile(userId)
       .then((p) => active && setProfile(p))
-      .catch(() => active && setError(true))
+      .catch((e: unknown) => active && setError(e ?? new Error('erro desconhecido')))
       .finally(() => active && setLoading(false));
     return () => {
       active = false;
@@ -40,7 +41,7 @@ export function ProfileProvider({ userId, children }: { userId: string; children
 
   const reload = useCallback(() => {
     setLoading(true);
-    setError(false);
+    setError(null);
     setAttempt((n) => n + 1);
   }, []);
   const value = useMemo(
