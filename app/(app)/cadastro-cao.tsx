@@ -1,26 +1,31 @@
 import { Redirect, useRouter } from 'expo-router';
-import { View } from 'react-native';
 
-import { Button } from '@/components/ui/Button';
-import { Screen } from '@/components/ui/Screen';
-import { Text } from '@/components/ui/Text';
+import { CadastroCao } from '@/features/dogs/CadastroCao';
+import { useDogs } from '@/features/dogs/DogsProvider';
+import { cadastrarCao } from '@/features/dogs/salvar';
 import { useProfile } from '@/features/profile/ProfileProvider';
-import { useTheme } from '@/lib/theme';
 
-// Tela provisória do F08. TODO(fase 3): cadastro do cão; no F03, quem não tem cão vem para cá.
+// F08 (cadastrar o cão) e F10 (adicionar outro). Quem não tem cão ativo vem para cá (F03, F12).
 export default function CadastroCaoScreen() {
-  const theme = useTheme();
   const router = useRouter();
   const { profile } = useProfile();
+  const { dogs, limit, reload } = useDogs();
   if (!profile?.is_adult_confirmed) return <Redirect href="/onboarding" />;
 
+  const temAtivo = Boolean(profile.active_dog_id);
+  const podeReativar = !temAtivo && dogs.some((d) => d.archived_at && !d.passed_away_at);
+
   return (
-    <Screen centered>
-      <View style={{ gap: theme.spacing.md, alignItems: 'center' }}>
-        <Text variant="subtitle">Cadastro do cão</Text>
-        <Text muted>Em breve.</Text>
-        <Button label="Ir para o início" variant="secondary" onPress={() => router.replace('/')} />
-      </View>
-    </Screen>
+    <CadastroCao
+      limit={limit}
+      onSubmit={async (draft) => {
+        const r = await cadastrarCao(profile.id, draft);
+        await reload();
+        return r;
+      }}
+      onDone={() => router.replace('/')}
+      onCancel={temAtivo ? () => router.back() : undefined}
+      onReactivate={podeReativar ? () => router.push('/caes') : undefined}
+    />
   );
 }

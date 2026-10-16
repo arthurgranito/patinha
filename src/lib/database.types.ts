@@ -179,14 +179,14 @@ isOneToOne: false
                   ]
                 },"dogs": {
                   Row: {
-                    "archived_at": string | null,"birth_month": string,"breed": string | null,"created_at": string,"daily_minutes": number,"energy": string,"id": string,"is_srd": boolean,"name": string,"owner_id": string,"photo_path": string | null,"size": string
+                    "archived_at": string | null,"birth_month": string,"breed": string | null,"created_at": string,"daily_minutes": number,"energy": string,"id": string,"is_srd": boolean,"name": string,"owner_id": string,"passed_away_at": string | null,"photo_path": string | null,"size": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "archived_at"?: string | null,"birth_month": string,"breed"?: string | null,"created_at"?: string,"daily_minutes": number,"energy": string,"id"?: string,"is_srd"?: boolean,"name": string,"owner_id"?: string,"photo_path"?: string | null,"size": string
+                    "archived_at"?: string | null,"birth_month": string,"breed"?: string | null,"created_at"?: string,"daily_minutes": number,"energy": string,"id"?: string,"is_srd"?: boolean,"name": string,"owner_id"?: string,"passed_away_at"?: string | null,"photo_path"?: string | null,"size": string
                   }
                   Update: {
-                    "archived_at"?: string | null,"birth_month"?: string,"breed"?: string | null,"created_at"?: string,"daily_minutes"?: number,"energy"?: string,"id"?: string,"is_srd"?: boolean,"name"?: string,"owner_id"?: string,"photo_path"?: string | null,"size"?: string
+                    "archived_at"?: string | null,"birth_month"?: string,"breed"?: string | null,"created_at"?: string,"daily_minutes"?: number,"energy"?: string,"id"?: string,"is_srd"?: boolean,"name"?: string,"owner_id"?: string,"passed_away_at"?: string | null,"photo_path"?: string | null,"size"?: string
                   }
                   Relationships: [
                     {
@@ -375,9 +375,34 @@ isOneToOne: false
             [_ in never]: never
           }
           Functions: {
-            "confirm_adult":
+            "can_write_dog_photo":
+{ Args: { "p_name": string }; Returns: boolean
+                           },
+"confirm_adult":
 { Args: Record<PropertyKey, never>; Returns: undefined
                            },
+"create_dog":
+{ Args: { "p_birth_month": string,"p_breed": string,"p_daily_minutes": number,"p_energy": string,"p_goals": Json,"p_is_srd": boolean,"p_name": string,"p_size": string }; Returns: {
+              "archived_at": string | null,
+"birth_month": string,
+"breed": string | null,
+"created_at": string,
+"daily_minutes": number,
+"energy": string,
+"id": string,
+"is_srd": boolean,
+"name": string,
+"owner_id": string,
+"passed_away_at": string | null,
+"photo_path": string | null,
+"size": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "dogs"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
 "default_display_name":
 { Args: { "p_email": string,"p_meta": Json }; Returns: string
                            },
@@ -413,6 +438,21 @@ isOneToOne: false
 "owns_dog":
 { Args: { "p_dog_id": string }; Returns: boolean
                            },
+"reassign_active_dog":
+{ Args: { "p_gone": string,"p_owner": string }; Returns: undefined
+                           },
+"save_dog_goals":
+{ Args: { "p_dog_id": string,"p_goals": Json }; Returns: {
+              "dog_id": string,
+"flagged_severe": boolean,
+"goal_code": string
+            }[]
+                          SetofOptions: {
+        from: "*"
+        to: "dog_goals"
+        isOneToOne: false
+        isSetofReturn: true
+      } },
 "user_day":
 { Args: { "p_ts"?: string,"p_user_id": string }; Returns: string
                            }

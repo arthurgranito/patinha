@@ -1,0 +1,50 @@
+# Fase 3 — F08 (cadastro com triagem), F11 (Meus cães), F10 (limite do grátis), F12 (excluir).
+# Pré-requisitos e login de teste: docs/auth.md ("Rodar o Maestro"). Rode com:
+#   maestro test -e EXPO_URL=exp://<IP do computador>:8081 .maestro/cadastro-cao.yaml
+# Termina excluindo o Caramelo, para o fluxo poder rodar de novo.
+appId: host.exp.exponent
+env:
+  EXPO_URL: exp://127.0.0.1:8081
+---
+- clearState
+- launchApp
+- openLink: ${EXPO_URL}
+- extendedWaitUntil:
+    visible: 'Entrar com Google'
+    timeout: 90000
+- tapOn: 'Entrar como teste'
+
+- runFlow:
+    when:
+      visible: 'Boas-vindas ao Patinha!'
+    commands:
+      - tapOn: 'Tenho 18 anos ou mais'
+      - tapOn: 'Continuar'
+- extendedWaitUntil:
+    visible: 'Como seu cão se chama?'
+    timeout: 15000
+- runFlow: subflows/cadastrar-caramelo.yaml
+
+# Hoje com o cão ativo no topo → Meus cães (F11)
+- extendedWaitUntil:
+    visible: 'Caramelo'
+    timeout: 15000
+- tapOn: 'Caramelo. Trocar de cão'
+- assertVisible: 'Meus cães'
+- assertVisible: 'Caramelo, cão ativo'
+
+# F10: o 2º cão no grátis
+- tapOn: '+ Adicionar cão'
+- assertVisible: 'Mais cães no Premium'
+- assertVisible: 'No plano grátis você cadastra 1 cão. Com o Premium, até 5.'
+
+# F12: excluir o único cão volta para o cadastro (F08)
+- tapOn: 'Mais opções de Caramelo'
+- tapOn: 'Excluir'
+- assertVisible: 'Excluir para sempre o Caramelo e todo o histórico de treino?'
+- tapOn:
+    text: '(Excluir|EXCLUIR)'
+    index: 1 # o botão do diálogo (o 0 é o botão da tela, atrás dele)
+- extendedWaitUntil:
+    visible: 'Como seu cão se chama?'
+    timeout: 15000

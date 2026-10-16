@@ -4,6 +4,7 @@ import { ActivityIndicator } from 'react-native';
 import { ErrorScreen } from '@/components/ui/ErrorScreen';
 import { Screen } from '@/components/ui/Screen';
 import { useAuth } from '@/features/auth/AuthProvider';
+import { DogsProvider } from '@/features/dogs/DogsProvider';
 import { ProfileProvider, useProfile } from '@/features/profile/ProfileProvider';
 import { useTheme } from '@/lib/theme';
 
@@ -25,17 +26,22 @@ function AppStack() {
   }
 
   // Sem 18+ confirmado, (abas) e cadastro-cao redirecionam para o onboarding (F02).
+  // Sem cão ativo, (abas) redireciona para o cadastro do cão (F03, F12).
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-        contentStyle: { backgroundColor: theme.colors.background },
-      }}
-    >
-      <Stack.Screen name="(abas)" />
-      <Stack.Screen name="onboarding" options={{ gestureEnabled: false }} />
-      <Stack.Screen name="cadastro-cao" />
-    </Stack>
+    <DogsProvider>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: theme.colors.background },
+        }}
+      >
+        <Stack.Screen name="(abas)" />
+        <Stack.Screen name="onboarding" options={{ gestureEnabled: false }} />
+        <Stack.Screen name="cadastro-cao" />
+        <Stack.Screen name="caes/index" options={{ headerShown: true, title: 'Meus cães' }} />
+        <Stack.Screen name="caes/[id]" options={{ headerShown: true, title: 'Editar' }} />
+      </Stack>
+    </DogsProvider>
   );
 }
 

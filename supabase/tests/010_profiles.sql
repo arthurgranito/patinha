@@ -60,7 +60,7 @@ select ok(not has_table_privilege('authenticated', 'public.profiles', 'delete'),
 select ok(has_column_privilege('authenticated', 'public.profiles', 'display_name', 'update'), 'update em display_name liberado');
 select ok(not has_column_privilege('authenticated', 'public.profiles', 'is_adult_confirmed', 'update'), 'update em is_adult_confirmed negado');
 select ok(not has_column_privilege('authenticated', 'public.profiles', 'adult_confirmed_at', 'update'), 'update em adult_confirmed_at negado');
-select ok(not has_column_privilege('authenticated', 'public.profiles', 'active_dog_id', 'update'), 'update em active_dog_id negado');
+select ok(has_column_privilege('authenticated', 'public.profiles', 'active_dog_id', 'update'), 'update em active_dog_id liberado (F11)');
 select ok(not has_function_privilege('anon', 'public.confirm_adult()', 'execute'), 'anon não executa confirm_adult');
 select ok(has_function_privilege('authenticated', 'public.confirm_adult()', 'execute'), 'authenticated executa confirm_adult');
 select is(
