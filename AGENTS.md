@@ -80,6 +80,15 @@ eas.json                perfis development, preview e production
 - Código só de desenvolvimento (ex.: "Entrar como teste"): carregue com `__DEV__ ? require(...) : null`, para o Metro cortar do bundle de produção, e inclua o texto em `scripts/check-bundle.sh`. Nada de usuário ou senha de teste no `supabase/seed.sql` (o `db-dev` leva o seed para a nuvem); use `supabase/dev/`.
 - Login e redirect URLs: `docs/auth.md`.
 
+## Convenções do banco (desde a Fase 2)
+- Toda tabela nova: `revoke all ... from anon, authenticated` e depois o grant mínimo (por coluna quando o app não pode escrever ou ler tudo). Toda escrita do app exige `(select public.is_adult())` no `with check`.
+- Funções: `set search_path = ''`, `revoke execute ... from public, anon` (o `001_funcoes.sql` falha se anon executar alguma). Funções que recebem `user_id` recusam outro usuário quando o JWT é de anon/authenticated.
+- Triggers que validam o usuário rodam como invoker (o `current_user` é o papel real). O caminho de serviço é só `auth.role() = 'service_role'` ou `current_user = 'postgres'`, nunca `auth.uid() is null`. Triggers que gravam em tabelas só de leitura são security definer e usam só `NEW`.
+- Erros que viram mensagem de tela: texto exato do `docs/flows.md` e SQLSTATE próprio da classe `PA` (`PA001` limite grátis, `PA002` limite de 5 cães, `PA003` conteúdo Premium, `PA004` fora de hoje/ontem). Acesso alheio: `42501` "Isso não é seu.".
+- `exercises` tem grant por coluna: no app, liste as colunas no `select` (nunca `*`); vídeo, passos, níveis, dicas e segurança vêm de `RPC:get_exercise`.
+- Testes pgTAP: cada arquivo cria os próprios usuários (ids `NN000000-...` do número do arquivo, e-mails `@teste.local`) e não depende do seed. Para conferir que a RLS barrou sem erro, use `pg_temp.linhas(sql)` (conta as linhas afetadas).
+- `supabase/seed.sql` é só de desenvolvimento (publica conteúdo de EXEMPLO): nunca roda em produção.
+
 ## Skills do projeto (`.claude/skills/`)
 - `implementar-fase`: executa uma fase do roadmap de ponta a ponta.
 - `licao-adestramento`: escreve, valida e revisa o conteúdo de `content/`.
