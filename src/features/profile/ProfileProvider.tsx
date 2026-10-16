@@ -16,6 +16,8 @@ type ProfileContextValue = {
   /** Erro do último carregamento (para "Detalhes" na tela de erro). */
   error: unknown;
   reload: () => void;
+  /** Relê o perfil sem passar pelo estado de carregando (ex.: o banco trocou active_dog_id). */
+  refresh: () => Promise<void>;
   setProfile: (profile: Profile) => void;
 };
 
@@ -44,9 +46,12 @@ export function ProfileProvider({ userId, children }: { userId: string; children
     setError(null);
     setAttempt((n) => n + 1);
   }, []);
+  const refresh = useCallback(async () => {
+    setProfile(await fetchProfile(userId));
+  }, [userId]);
   const value = useMemo(
-    () => ({ profile, loading, error, reload, setProfile }),
-    [profile, loading, error, reload],
+    () => ({ profile, loading, error, reload, refresh, setProfile }),
+    [profile, loading, error, reload, refresh],
   );
   return <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>;
 }

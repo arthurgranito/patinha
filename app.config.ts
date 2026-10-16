@@ -48,6 +48,14 @@ const config: ExpoConfig = {
     'expo-web-browser',
     'expo-localization',
     [
+      'expo-image-picker',
+      {
+        photosPermission: 'O Patinha usa suas fotos para mostrar o seu cão no app.',
+        cameraPermission: 'O Patinha usa a câmera para tirar a foto do seu cão.',
+        microphonePermission: false,
+      },
+    ],
+    [
       'expo-splash-screen',
       {
         backgroundColor: '#FFF4E6',

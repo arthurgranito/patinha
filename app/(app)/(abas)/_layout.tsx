@@ -8,6 +8,7 @@ export default function AbasLayout() {
   const { profile } = useProfile();
 
   if (!profile?.is_adult_confirmed) return <Redirect href="/onboarding" />;
+  if (!profile.active_dog_id) return <Redirect href="/cadastro-cao" />;
 
   return (
     <Tabs
