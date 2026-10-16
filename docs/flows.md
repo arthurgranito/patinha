@@ -832,10 +832,13 @@ sequenceDiagram
 #### X.2 — Sessão expirada
 - **Renovação:** o `supabase-js` renova o token automaticamente quando o app volta para o primeiro plano.
 - **Se a renovação falhar:** o app vai para o login com "Sua sessão expirou. Entre de novo."
+- **Ao abrir o app:** a sessão salva no aparelho é conferida no servidor (`auth.getUser()`). Se o usuário não existe mais ou o token foi recusado, o app sai só deste aparelho e vai para o login com a mesma mensagem. Sem internet, a sessão fica (uso offline).
+- **Perfil ausente para um usuário válido:** o app cria o perfil com `RPC:ensure_profile` em vez de mostrar erro.
 - **Fila offline:** é mantida e enviada depois do login, se o usuário for o mesmo.
 
 #### X.3 — Erro inesperado
-- **Na tela:** "Algo deu errado do nosso lado. Já fomos avisados." com "Tentar de novo".
+- **Na tela:** "Algo deu errado do nosso lado. Já fomos avisados." com "Tentar de novo" e "Sair" (só deste aparelho, volta para a entrada), para o usuário nunca ficar preso.
+- **"Detalhes":** em desenvolvimento e nos previews (não em produção), mostra o código e a mensagem técnica do erro, até o Sentry entrar (Fase 13).
 - **No Sentry:** o erro chega com a versão do app, o canal do EAS Update e o usuário.
 
 #### X.4 — App em segundo plano durante a sessão
@@ -856,7 +859,7 @@ sequenceDiagram
 |---|---|---|
 | F01 Primeiro acesso | auth.users, profiles | `signInWithOAuth`, `exchangeCodeForSession`, `signInWithIdToken` (Apple), trigger de profiles |
 | F02 Onboarding pessoal | profiles | update, `RPC:confirm_adult` |
-| F03 Login | profiles, dogs | Auth |
+| F03 Login | profiles, dogs | Auth, `auth.getUser` (sessão salva), `RPC:ensure_profile` |
 | F04 Sair | push_tokens | `signOut`, delete do token |
 | F05 Perfil | profiles | update (grant por coluna) |
 | F06 Exportar | todas do usuário | `EF:export-data` |
@@ -912,3 +915,8 @@ sequenceDiagram
 | `RPC:upsert_push_token` (troca de dono) | O mesmo aparelho usado por outra conta (F29) | 8 |
 | View pública da biblioteca sem os campos Premium | A lista não pode vazar o `video_url` e os passos (F15) | 4 |
 | `reviewed_at` em exercises/programs | Rastreabilidade da revisão (F39) | 4 |
+| Limite de troca de fuso/virada do dia: 1 por 24 h (`timezone_changed_at` + trigger) e sem fusos `Etc/`, `posix/` e `right/` | Trocar o fuso em sequência permite gravar um treino atrasado num dia lógico já fechado (ADR-05; revisão de segurança da Fase 1) | 6 |
+| Tabelas novas exigem 18+ confirmado no banco (`with check` com `profiles.is_adult_confirmed`) | Quem chama o PostgREST direto pula o onboarding (ADR-08; revisão de segurança da Fase 1) | 2 |
+| Testes pgTAP extras de privilégio em `profiles` | `anon` sem update; `authenticated` sem alterar `id`/`created_at`; sem executar `handle_new_user`/`profiles_validate_timezone`; `search_path` e `security definer` do `handle_new_user`; update no perfil de outro conferido direto (revisão de segurança da Fase 1) | 2 |
+| Sessão em armazenamento cifrado (chave no `expo-secure-store`, padrão "LargeSecureStore" do Supabase) | Hoje o refresh token fica em texto no AsyncStorage (revisão de segurança da Fase 1) | 14 |
+| App Links / Universal Links (`https://<domínio>/auth`) no lugar do `patinha://` | Outro app pode registrar o esquema `patinha://` no Android e receber o código (revisão de segurança da Fase 1) | 15 |

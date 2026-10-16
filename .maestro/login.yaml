@@ -1,0 +1,57 @@
+# Fase 1 — F01 (entrar), F02 (onboarding 18+), F03 (sessão persiste), F04 (sair).
+# O login do Google não dá para automatizar: o fluxo usa "Entrar como teste", que só
+# aparece em desenvolvimento com EXPO_PUBLIC_DEV_LOGIN=true. Pré-requisitos em docs/auth.md
+# ("Rodar o Maestro"). Rode com:
+#   maestro test -e EXPO_URL=exp://<IP do computador>:8081 .maestro/login.yaml
+appId: host.exp.exponent
+env:
+  EXPO_URL: exp://127.0.0.1:8081
+---
+- clearState
+- launchApp
+- openLink: ${EXPO_URL}
+- extendedWaitUntil:
+    visible: 'Entrar com Google'
+    timeout: 90000
+
+# F01: boas-vindas e entrada
+- assertVisible: '10 minutinhos por dia'
+- tapOn: 'Entrar como teste'
+
+# F02: só na 1ª vez do usuário de teste (depois de `make db-reset`)
+- runFlow:
+    when:
+      visible: 'Boas-vindas ao Patinha!'
+    commands:
+      - assertVisible: 'O Patinha é para tutores maiores de 18 anos.'
+      - tapOn: 'Continuar' # desabilitado sem 18+: continua na mesma tela
+      - assertVisible: 'Boas-vindas ao Patinha!'
+      - tapOn: 'Tenho 18 anos ou mais'
+      - assertNotVisible: 'O Patinha é para tutores maiores de 18 anos.'
+      - tapOn: 'Continuar'
+      - extendedWaitUntil:
+          visible: 'Em breve.'
+          timeout: 15000
+      - tapOn: 'Ir para o início'
+
+- assertVisible: 'Patinha 🐾 — em construção'
+
+# F03: fechar e abrir de novo continua logado
+- stopApp
+- launchApp
+- openLink: ${EXPO_URL}
+- extendedWaitUntil:
+    visible: 'Patinha 🐾 — em construção'
+    timeout: 90000
+
+# F05 + F04: Perfil e sair
+- tapOn: 'Perfil'
+- assertVisible: 'Virada do dia'
+- tapOn: 'Sair'
+- assertVisible: 'Sair da sua conta neste aparelho?'
+- tapOn:
+    text: '(Sair|SAIR)'
+    index: 1 # o botão do diálogo (o 0 é o botão da tela, atrás dele)
+- extendedWaitUntil:
+    visible: 'Entrar com Google'
+    timeout: 15000

@@ -39,14 +39,14 @@ Gerenciador de pacotes: **npm** (o `package-lock.json` é versionado; o CI usa `
 | `make install` | `npm ci` |
 | `make dev` | `npx expo start` (QR code para o Expo Go) |
 | `make db-up` / `make db-down` | sobe/para o Supabase local (API em `127.0.0.1:54321`, Studio em `localhost:54323`) |
-| `make db-reset` | recria o banco local aplicando `supabase/migrations` e `supabase/seed.sql` |
+| `make db-reset` | recria o banco local aplicando `supabase/migrations` e `supabase/seed.sql`, e cria o usuário de teste local (`supabase/dev/`) |
 | `make db-test` | testes pgTAP de `supabase/tests` (`supabase test db`) |
 | `make types` | gera `src/lib/database.types.ts` a partir do banco local |
 | `make test` | Jest (jest-expo + Testing Library) |
 | `make lint` | ESLint (config do Expo) + Prettier `--check` |
 | `make typecheck` | `tsc --noEmit` |
 | `make doctor` | `expo-doctor` (precisa de internet para a API do Expo) |
-| `make export-check` | `npx expo export --platform all` (pega erros de bundling) |
+| `make export-check` | `npx expo export --platform all` (pega erros de bundling) + `scripts/check-bundle.sh` |
 | `make check` | tudo acima, na ordem do CI |
 
 Scripts equivalentes no `package.json`: `lint`, `format`, `format:check`, `typecheck`, `test`, `doctor`, `export:check`.
@@ -76,6 +76,9 @@ eas.json                perfis development, preview e production
 - Cliente Supabase: sempre `getSupabase()` de `@/lib/supabase` (criado sob demanda; sessão no AsyncStorage).
 - Cores, espaçamentos e tipografia só via `useTheme()` de `@/lib/theme`.
 - Tipos do banco: rode `make types` depois de cada migration e faça commit do arquivo gerado.
+- Textos de tela ficam em `src/features/<domínio>/mensagens.ts`, copiados do `docs/flows.md`; os testes usam as mesmas constantes.
+- Código só de desenvolvimento (ex.: "Entrar como teste"): carregue com `__DEV__ ? require(...) : null`, para o Metro cortar do bundle de produção, e inclua o texto em `scripts/check-bundle.sh`. Nada de usuário ou senha de teste no `supabase/seed.sql` (o `db-dev` leva o seed para a nuvem); use `supabase/dev/`.
+- Login e redirect URLs: `docs/auth.md`.
 
 ## Skills do projeto (`.claude/skills/`)
 - `implementar-fase`: executa uma fase do roadmap de ponta a ponta.

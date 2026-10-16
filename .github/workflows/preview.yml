@@ -41,6 +41,8 @@ jobs:
           EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}
           # Runtime "exposdk:<SDK>" para o Expo Go abrir o update (ver app.config.ts).
           EXPO_GO_PREVIEW: 'true'
+          # "Detalhes" na tela de erro (X.3) até o Sentry (Fase 13). Nunca em produção.
+          EXPO_PUBLIC_ERROR_DETAILS: 'true'
         with:
           qr-target: expo-go
           # --branch explícito: no PR o checkout fica em HEAD destacado e o --auto
