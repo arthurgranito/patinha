@@ -3,7 +3,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(31);
+select plan(32);
 
 create function pg_temp.linhas(p_sql text) returns int language plpgsql as $$
 declare n int;
@@ -205,6 +205,20 @@ select throws_ok(
      values ('50000000-0000-4000-8000-0000000000d1', '50000000-0000-4000-8000-000000000001',
              '50000000-0000-4000-8000-0000000000e1', 'quase', now() - interval '10 days') $$,
   '42501', null, 'sem sub e sem papel de serviço, a janela não é pulada'
+);
+reset role;
+
+-- Uma função security definer (dono postgres) chamada com JWT de usuário não vira serviço.
+create function pg_temp.insere_como_definer() returns void language sql security definer as $$
+  insert into public.training_sessions (dog_id, user_id, exercise_id, result, done_at)
+  values ('50000000-0000-4000-8000-0000000000d1', '50000000-0000-4000-8000-000000000001',
+          '50000000-0000-4000-8000-0000000000e1', 'quase', now() - interval '10 days');
+$$;
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub": "50000000-0000-4000-8000-000000000001", "role": "authenticated"}', true);
+select throws_ok(
+  $$ select pg_temp.insere_como_definer() $$,
+  'PA004', null, 'RPC security definer chamada pelo app não pula a janela de hoje/ontem'
 );
 reset role;
 
