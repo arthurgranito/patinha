@@ -248,10 +248,12 @@ sequenceDiagram
 6. Energia: "Calmo", "No meio-termo" ou "Furacão".
 7. "O que está te incomodando?" (pode marcar vários): xixi no lugar errado, puxa a guia, late demais, morde tudo, pula nas pessoas, não vem quando chamo, fica ansioso sozinho, quero ensinar truques, é filhote e quero começar certo.
 8. "Quanto tempo você tem por dia?" 5, 10 ou 15 minutos.
-9. → insert em `dogs` + `dog_goals` → `active_dog_id` → o F13 gera o plano → tela "O plano do Caramelo está pronto 🐾".
+9. → `RPC:create_dog` (insert em `dogs` + `dog_goals` numa transação) → o banco faz do 1º cão o `active_dog_id` → o F13 gera o plano → tela "O plano do Caramelo está pronto 🐾". Até a Fase 5 (sem plano), a tela diz "Tudo pronto para treinar com Caramelo 🐾".
 
 **Alternativos:**
 - **2a. Pular a foto:** o app usa um avatar ilustrado com a inicial.
+- **2b. Sem permissão de câmera:** "Sem acesso à câmera. Você pode escolher da galeria ou pular."
+- **1a. Sem cão ativo, mas com arquivados:** o 1º passo mostra "Reativar um cão arquivado" (→ "Meus cães").
 - **7a. Triagem (ADR-07):** ao marcar "morde tudo" ou "fica ansioso sozinho", o app pergunta a intensidade:
   - **Leve** ("morde de brincadeira", "chora um pouco"): segue normalmente.
   - **Grave** ("já mordeu alguém e machucou", "se machuca ou destrói portas quando sozinho"): `flagged_severe = true` e o aviso "Esse comportamento merece a ajuda de um adestrador presencial ou de um veterinário comportamentalista. Aqui no Patinha você pode treinar outras coisas enquanto isso, mas não vamos montar um plano para esse ponto." O objetivo fica fora do plano.
@@ -259,18 +261,20 @@ sequenceDiagram
 **Erros:**
 - **1e. Nome vazio ou com mais de 30 caracteres:** "Use um nome de 1 a 30 caracteres."
 - **2e. Upload falhou:** "Não conseguimos enviar a foto. Você pode tentar de novo depois." (o cadastro segue sem foto)
+- **3e. Mês de nascimento no futuro** (trigger, só quem chama a API direto): "Escolha um mês que já passou."
 - **9e. Limite de cães** (trigger): "No plano grátis você cadastra 1 cão. Com o Premium, até 5." com o link para o F33.
+- **X.1. Sem internet:** "Concluir" fica desabilitado com "Você está offline".
 
 **Pós-condições:** `dogs`, `dog_goals` e `dog_programs` criados.
 
 **Efeitos:** evento `dog_created {size, is_srd, goals}`.
 
 #### F09 — Editar o cão
-- **Ator:** Tutor. **Gatilho:** Carteirinha → "Editar".
+- **Ator:** Tutor. **Gatilho:** Carteirinha → "Editar" (até a Fase 7, "Meus cães" → "Editar").
 
 **Passos:**
-1. Edita qualquer campo do F08.
-2. → update.
+1. Edita qualquer campo do F08, numa tela só, com "Salvar".
+2. → update só do que mudou; objetivos por `RPC:save_dog_goals`.
 
 **Alternativos:**
 - **Mudou os objetivos ou o tempo por dia:** "Quer atualizar o plano do Caramelo?" com "Atualizar" (refaz o F13 mantendo os níveis já conquistados) ou "Manter o atual".
@@ -293,25 +297,30 @@ sequenceDiagram
 - **Ator:** Tutor. **Gatilho:** toque na foto do cão no topo da tela Hoje.
 
 **Passos:**
-1. → seletor com os cães → `update profiles.active_dog_id`.
+1. → "Meus cães" (o seletor) → toque no cão → `update profiles.active_dog_id` (o banco confere que o cão é do tutor e está ativo).
 2. → Hoje, o plano, a sequência e a carteirinha passam a mostrar o cão escolhido.
 
 #### F12 — Arquivar ou excluir o cão
-- **Ator:** Tutor. **Gatilho:** Carteirinha → "⋯".
+- **Ator:** Tutor. **Gatilho:** Carteirinha → "⋯" (até a Fase 7, "Meus cães" → "⋯").
 
 **Passos:**
 1. **Arquivar:** "Arquivar o Caramelo? O histórico fica guardado e você pode reativar depois." → `archived_at = now()`.
 2. **Excluir:** "Excluir para sempre o Caramelo e todo o histórico de treino?" → delete (cascade) + apaga a foto.
 
 **Alternativos:**
-- **Era o cão ativo:** outro cão vira o ativo; se não houver nenhum, a pessoa vai para o F08.
-- **Reativar:** em "Meus cães → Arquivados", sujeito ao limite do plano.
+- **Era o cão ativo:** o banco faz do cão ativo mais antigo o novo ativo; se não houver nenhum, `active_dog_id` fica nulo e a pessoa vai para o F08.
+- **Reativar:** em "Meus cães → Arquivados", sujeito ao limite do plano. Sem cão ativo, o reativado vira o ativo.
+- **"O Caramelo partiu 🌈":** confirmação "Sentimos muito pela partida de Caramelo. 🌈 O histórico fica guardado com carinho, e o Patinha não vai mais mandar lembretes nem cards de Caramelo." → `passed_away_at` (a hora é do banco, que arquiva junto). Em "Arquivados" aparece "Caramelo 🌈 · Guardado com carinho", sem "Reativar".
+
+**Erros:**
+- **Reativar quem partiu** (trigger, `PA005`): "Caramelo está guardado com carinho e não pode ser reativado." O `passed_away_at` também não se desfaz.
+- **Ação sem internet:** os botões ficam desabilitados com "Você está offline".
 
 **Pós-condições:** o cão some de Hoje.
 
 **Efeitos:** os lembretes deixam de citar esse cão.
 
-> **Nota:** se o cão faleceu, o tom precisa ser outro. Inclua a opção "O Caramelo partiu 🌈", que arquiva com uma mensagem de carinho e **nunca** mais manda lembrete nem card daquele cão.
+> **Nota:** se o cão faleceu, o tom precisa ser outro. A opção "O Caramelo partiu 🌈" arquiva com uma mensagem de carinho e **nunca** mais manda lembrete nem card daquele cão: os lembretes (Fase 8) e os cards (Fase 9) precisam ignorar todo cão com `passed_away_at`.
 
 ### C. Plano e conteúdo
 

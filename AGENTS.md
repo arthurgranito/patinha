@@ -84,9 +84,13 @@ eas.json                perfis development, preview e production
 - Toda tabela nova: `revoke all ... from anon, authenticated` e depois o grant mínimo (por coluna quando o app não pode escrever ou ler tudo). Toda escrita do app exige `(select public.is_adult())` no `with check`.
 - Funções: `set search_path = ''`, `revoke execute ... from public, anon` (o `001_funcoes.sql` falha se anon executar alguma). Funções que recebem `user_id` recusam outro usuário quando o JWT é de anon/authenticated.
 - Triggers que validam o usuário rodam como invoker (o `current_user` é o papel real). O caminho de serviço é só `auth.role() = 'service_role'` ou `current_user = 'postgres'`, nunca `auth.uid() is null`. Triggers que gravam em tabelas só de leitura são security definer e usam só `NEW`.
-- Erros que viram mensagem de tela: texto exato do `docs/flows.md` e SQLSTATE próprio da classe `PA` (`PA001` limite grátis, `PA002` limite de 5 cães, `PA003` conteúdo Premium, `PA004` fora de hoje/ontem). Acesso alheio: `42501` "Isso não é seu.".
+- Erros que viram mensagem de tela: texto exato do `docs/flows.md` e SQLSTATE próprio da classe `PA` (`PA001` limite grátis, `PA002` limite de 5 cães, `PA003` conteúdo Premium, `PA004` fora de hoje/ontem, `PA005` reativar cão que partiu). Acesso alheio: `42501` "Isso não é seu.".
 - `exercises` tem grant por coluna: no app, liste as colunas no `select` (nunca `*`); vídeo, passos, níveis, dicas e segurança vêm de `RPC:get_exercise`.
 - Testes pgTAP: cada arquivo cria os próprios usuários (ids `NN000000-...` do número do arquivo, e-mails `@teste.local`) e não depende do seed. Para conferir que a RLS barrou sem erro, use `pg_temp.linhas(sql)` (conta as linhas afetadas).
+- Escrita que envolve várias tabelas (ex.: cão + objetivos) vai numa RPC `security invoker` (`create_dog`), para ser atômica sem pular RLS, grants e triggers.
+- Cão ativo: quem mantém `profiles.active_dog_id` é o banco (trigger `dogs_keep_active`); o app só troca o ativo (F11) e relê o perfil (`useProfile().refresh` / `useDogs().reload`) depois de criar, arquivar ou excluir.
+- Storage: buckets privados com políticas por pasta `<uid>/` em `storage.objects` (testes em `090_storage_fotos.sql`). Para exibir, sempre URL assinada (`createSignedUrls`). Fotos do cão: `dog-photos/<uid>/<dog_id>.jpg`, JPEG até 2 MB, com o nome conferido por `can_write_dog_photo`. Em pgTAP, apagar de `storage.objects` exige `set_config('storage.allow_delete_query', 'true', true)`.
+- Cão com `passed_away_at` nunca recebe lembrete nem card (Fases 8 e 9).
 - `supabase/seed.sql` é só de desenvolvimento (publica conteúdo de EXEMPLO): nunca roda em produção.
 
 ## Skills do projeto (`.claude/skills/`)
