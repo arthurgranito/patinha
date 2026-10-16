@@ -27,7 +27,28 @@ export type Database = {
           Functions: {
             "confirm_adult":
 { Args: Record<PropertyKey, never>; Returns: undefined
-                           }
+                           },
+"default_display_name":
+{ Args: { "p_email": string,"p_meta": Json }; Returns: string
+                           },
+"ensure_profile":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "active_dog_id": string | null,
+"adult_confirmed_at": string | null,
+"created_at": string,
+"day_cutoff_hour": number,
+"display_name": string,
+"id": string,
+"is_adult_confirmed": boolean,
+"reminder_hour": number,
+"timezone": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "profiles"
+        isOneToOne: true
+        isSetofReturn: false
+      } }
           }
           Enums: {
             [_ in never]: never
