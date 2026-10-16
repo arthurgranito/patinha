@@ -1,0 +1,49 @@
+# F08 — cadastra o "Caramelo" sem foto (o seletor de fotos do sistema não é automatizável;
+# confira a foto à mão). Começa na tela "Como seu cão se chama?".
+appId: host.exp.exponent
+---
+- assertVisible: 'Como seu cão se chama?'
+- assertVisible: 'Passo 1 de 8'
+# 1e: nome vazio
+- tapOn: 'Continuar'
+- assertVisible: 'Use um nome de 1 a 30 caracteres.'
+- tapOn: 'Nome do cão'
+- inputText: 'Caramelo'
+- hideKeyboard
+- tapOn: 'Continuar'
+# 2a: sem foto
+- assertVisible: 'Uma foto para o perfil'
+- tapOn: 'Pular'
+- assertVisible: 'Qual a idade?'
+- tapOn: 'Filhote, até 6 meses'
+- assertVisible: 'Nasceu por volta de .*'
+- tapOn: 'Continuar'
+- assertVisible: 'Qual o porte?'
+- tapOn: 'Médio'
+- tapOn: 'Continuar'
+- assertVisible: 'Qual a raça?'
+- assertVisible: 'Vira-lata 💛'
+- tapOn: 'Vira-lata 💛'
+- tapOn: 'Continuar'
+- assertVisible: 'Como é a energia no dia a dia?'
+- tapOn: 'Furacão'
+- tapOn: 'Continuar'
+# 7a: triagem grave (ADR-07)
+- assertVisible: 'O que está te incomodando?'
+- tapOn: 'Morde tudo'
+- scrollUntilVisible:
+    element: 'Já mordeu alguém e machucou'
+- tapOn: 'Já mordeu alguém e machucou'
+- scrollUntilVisible:
+    element: 'Esse comportamento merece a ajuda de um adestrador presencial.*'
+- assertVisible: 'Esse comportamento merece a ajuda de um adestrador presencial.*'
+- scrollUntilVisible:
+    element: 'Continuar'
+- tapOn: 'Continuar'
+- assertVisible: 'Quanto tempo você tem por dia?'
+- tapOn: '10 minutos'
+- tapOn: 'Concluir'
+- extendedWaitUntil:
+    visible: 'Tudo pronto para treinar com Caramelo 🐾'
+    timeout: 15000
+- tapOn: 'Ir para o início'

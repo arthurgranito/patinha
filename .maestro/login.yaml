@@ -29,10 +29,15 @@ env:
       - tapOn: 'Tenho 18 anos ou mais'
       - assertNotVisible: 'O Patinha é para tutores maiores de 18 anos.'
       - tapOn: 'Continuar'
-      - extendedWaitUntil:
-          visible: 'Em breve.'
-          timeout: 15000
-      - tapOn: 'Ir para o início'
+
+# F08 (Fase 3): sem cão, o app pede o cadastro antes de Hoje
+- extendedWaitUntil:
+    visible: '(Como seu cão se chama\?|Patinha 🐾 — em construção)'
+    timeout: 15000
+- runFlow:
+    when:
+      visible: 'Como seu cão se chama?'
+    file: subflows/cadastrar-caramelo.yaml
 
 - assertVisible: 'Patinha 🐾 — em construção'
 
